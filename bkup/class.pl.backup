@@ -1,0 +1,236 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Data::Dumper;
+use DBI;
+use CGI qw/:standard/;
+use dnd_config;
+#browsers must behave
+my $q = CGI->new;
+
+#html Header
+print $q->header;
+
+
+unless($q->param('arch')){
+  print $q->start_html(
+    -title=>'TO Class Information',
+    -script=>{
+      -type=>"text/javascript",
+      -src=>"class.js"},
+    -style=>[
+      {'src'=>'class.css'}
+    ],
+  ),
+  $q->br;
+
+  #prepare the queries
+  my $arch = $dnd_config::sql_arch;
+  my $classes = $dnd_config::sql_classes;
+
+  $arch->execute();
+  $classes->execute();
+
+
+  my @classlist;
+  while(my $item = $classes->fetchrow_hashref()) {
+    push(@classlist,$item);
+  }
+  my @archlist;
+  while(my $item = $arch->fetchrow_hashref()) {
+    push(@archlist,$item);
+  }
+
+
+  print $q->start_div({id=>'class_select'}),
+  $q->start_Select({
+    id=>'select_class',
+    onchange=>'showArch(this.options[this.selectedIndex].value);'
+  }),
+  $q->option({value=>'0'},'-----');
+
+  foreach(@classlist) {
+    print $q->option({value=>"class_".$_->{'id'}},$_->{'name'});
+  }
+
+  print $q->end_Select;
+
+
+#print "<select id='archlist' name='arch'>\n";
+print $q->start_Select({id=>'archlist',name=>'arch'});
+
+
+#null value
+print $q->start_optgroup({id=>'0'}),$q->option({value=>'0'},'-----'),$q->end_optgroup;
+foreach my $class (@classlist) {
+  
+
+  print $q->start_optgroup({id=>"class_".$class->{'id'}});
+  foreach(@archlist) {
+    if ($class->{'name'} eq $_->{'base'}) {
+      print $q->option({value=>$_->{'id'}},$_->{'name'});
+    }
+  }
+  print $q->end_optgroup();
+}
+print $q->end_Select();
+
+print $q->input({name=>'level', id=>'select_level', class=>'spinner', value=>'20'}),
+
+$q->button({
+  id=>"submit", 
+  type=>"button", 
+  onclick=>"loadStuff()", 
+  touchend=>"loadStuff()",
+  value=>"Get Class"
+}),
+$q->end_div(),
+$q->div({id=>"classdata"},"Select a class, archtype and level from above to see the level progression info"),
+$q->end_html();
+
+
+
+#requery
+} else {
+
+#parameter style stuff
+my $arch = param('arch');
+my $level = param('level');
+$level = 20 if ($level>20 || ! $level || $level<1);
+
+
+#get the stuff
+my $stuff = $dnd_config::sql_class;
+$stuff->execute($arch,$level);
+my $meta_data = $dnd_config::sql_class_meta;
+$meta_data->execute($arch);
+my $column_format = $dnd_config::sql_arch_table;
+$column_format->execute($arch);
+
+#store the stuff in an array
+my @abilities;
+while (my $row = $stuff->fetchrow_hashref()) {
+  push (@abilities,$row);
+}
+my @meta_list;
+while (my $row = $meta_data->fetchrow_hashref()) {
+  push (@meta_list,$row);
+}
+
+my $class=$abilities[0]->{'class'};
+$arch=$abilities[0]->{'arch'};
+
+my $what = "$class ";
+#if class isn't the same as archtype, suffix class with archtype name
+if ($class ne  $arch) {
+  $what.="($arch)";
+}
+
+	#column dictation
+my @col = split(',',$column_format->fetchrow_array());
+my @column;
+foreach my $id (@col) {
+  foreach my $ability (@abilities){
+    if ($ability->{'id'} == $id) {
+      push (@column,$ability->{'name'});
+      last;
+    }
+  }
+}
+print Dumper(@column);
+
+#start the table, make the headers
+print $q->start_table({id=>'level_progression'}),
+$q->Tr(th({colspan=>6},"$level Level $what")),
+$q->start_Tr(),
+$q->th(['Level','Bab','Fort','Ref','Will','Abilities']);
+#customize based on class
+foreach(@column) {
+  print $q->th($_);
+}
+print $q->end_Tr;
+
+
+#print the stuff by level
+foreach our $a (1..$level) {
+  print "<tr><td class='level'> $a </td>";
+    #deal with the meta-info (bab, saves)
+
+    #base attack bonus
+  print "<td class='bab'>";
+   print int($a*($meta_list[0]->{'bab'}/100));
+    print "</td>";
+    #saves
+ foreach('fort','ref','will') {
+   print "<td class='saves'>";
+      print int( ( $a / 2 ) + 2 ) if ($meta_list[0]->{"$_"} eq "good");
+      print int( $a / 3 ) if ($meta_list[0]->{"$_"} eq "poor");
+      print "</td>";
+    }
+    print "<td class='abilities'>";
+    #start @0 abilities
+    my $count=0;
+
+    #print abilities
+    foreach (@abilities) {
+      foreach my $spec (@col) {
+        if ($_->{'id'}!=$spec) {#stuff
+     } 
+          if ($_->{'level'}==$a) {
+            #increment the abilities
+	    $count++;
+            #comma seperate the abilities
+	    print ", " unless $count==1;
+	    print 
+	  $q->start_span({
+	    class=>'ability'
+	    }),
+	  $q->a(
+	    {
+	      onclick=>"descriptionMouseOver($_->{'id'})",
+	      href=>'javascript:void();'
+	    },
+	    $_->{'name'});
+	#make the modifier string pretty if needed.
+	if ($_->{'mod_string'}) {
+	  $_->{'mod_string'}=~s/\?/$_->{'modifier'}/g;
+	  $_->{'mod_string'}=~s/any per day/at will/g;
+	  print ": ",$_->{'mod_string'};
+	}
+      print $q->end_span;
+      }
+    }
+  print "---&nbsp;" if $count==0;
+  print "</td></tr>\n";
+  }
+  }
+  #end the table
+  print $q->end_table;
+
+
+
+#generate info region
+print $q->start_div({id=>'info'});
+my @list;
+foreach my $item (@abilities) {
+  my $id = $item->{'id'};
+#have I printed this one yet? lets not be wasteful
+  unless(grep {$_ eq $id} @list) {
+    push(@list,$id);
+    my ($info, $name) = @{$item}{qw(description name)};
+    $info =~ s/(\[\[class\]\])/$item->{'class'}/g;
+#start the div    
+    print $q->div(
+      {
+       id=>$id, 
+       style=>'display:none;', 
+       class=>'ability_info'
+     },
+     h3($name),
+     p($info)
+   );
+ }
+}
+
+print $q->end_div();
+}

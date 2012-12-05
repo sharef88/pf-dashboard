@@ -1,0 +1,20 @@
+Options +FollowSymLinks +ExecCGI
+AddHandler cgi-script .pl
+allow from all
+  
+#Order Deny,Allow
+#Deny from all
+#Allow from 69.16.222.93
+#Allow from 67.177.156.20
+#Allow from 71.192.69.200
+#Rewriteengine on
+
+
+#lw office IP, cuz why not?
+#RewriteCond %{REMOTE_ADDR} !^(67\.225\.149\.136)$
+
+#work IP is allowed to devsite
+#RewriteCond %{REMOTE_ADDR} !^(10\.20\.4\.93)$
+
+#everyone else, to dash.orbanos.org
+#RewriteRule .* http://dash.orbanos.org [L]
