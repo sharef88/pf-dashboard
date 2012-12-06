@@ -6,7 +6,6 @@ use Class::db;
 use Data::Dumper;
 
 my $stuff = db->new;
-print Dumper(db->new);
-print Dumper($stuff);
-print Dumper($stuff->DBI);
-
+#print Dumper($stuff);
+#print $stuff->cursor;
+print Dumper($stuff->user("NPC"));

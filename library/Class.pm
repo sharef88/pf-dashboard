@@ -7,6 +7,7 @@ sub new {
 	return bless $self, $class;
 }
 
+=broke
 sub AUTOLOAD {
 	my ($self) = @_;
 
@@ -20,6 +21,22 @@ sub AUTOLOAD {
 
 }
 
+=cut
+sub AUTOLOAD {
+my ($self, $value) = @_;
+
+our $AUTOLOAD;
+   my ($caller,$variable) = ($AUTOLOAD =~ /^(.*)::(.*)$/);
+
+   no strict qw(refs);
+   *{"${caller}::${variable}"} = sub { 
+      my ($self, $value ) = @_;
+      $self->{$variable} = $value if defined $value;
+      return $self->{$variable};
+   };
+   $self->{$variable} = $value if defined $value;
+   return $self->{$variable};
+}
 sub DESTROY { }
 
 1;
