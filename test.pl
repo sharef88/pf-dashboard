@@ -9,3 +9,4 @@ my $stuff = db->new;
 #print Dumper($stuff);
 #print $stuff->cursor;
 print Dumper($stuff->user("NPC"));
+print Dumper($stuff->class('abilities',1,5));
