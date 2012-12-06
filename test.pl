@@ -3,8 +3,10 @@ use strict;
 use warnings;
 use lib qw/library/;
 use Class::db;
-use Class;
+use Data::Dumper;
 
 my $stuff = db->new;
-print $stuff;
+print Dumper(db->new);
+print Dumper($stuff);
+print Dumper($stuff->DBI);
 

@@ -18,10 +18,10 @@ my $pw = "penguin";
 
 
 sub new {
-   my $class = shift;
-   my $self  = {@_};
-   
-   return bless $self, $class;
+   my ($class,@_args) = @_;
+   my $self = $class->SUPER::new(@_args);
+   $self->DBI(DBI->connect("DBi:mysql:$database",$user,$pw, {AutoCommit => 1}));
+   return $self;
 }
                         
 

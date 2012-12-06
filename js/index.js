@@ -55,10 +55,10 @@ function loginVerify(event, ui) {
 jQuery(document).ready(function(){
 	$('#over_tabs').tabs({
 		heightStyle: 'fill',
-		activate: function(event, ui) {
-                	var id = '#'+ui.newPanel.id;
-                        if (ui.newTab.href != id) {
-                        	ui.newTab.href = id;
+		load: function(event, ui) {
+                	var id = '#'+ui.panel.id;
+                        if (ui.tab.href != id) {
+                        	ui.tab.href = id;
 			}
 		},                
 		beforeLoad: function(event, ui) {
