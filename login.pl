@@ -56,7 +56,7 @@ unless ( $q->param('login') || $q->param('register') ) {
 	$q->end_div();	
 
 	#divtest, for testing (duh?)
-	print $q->div({id=>'test_div'}," ohai, a page that sharef screwed up, oops! ".$input[1]);
+	print $q->div({id=>'test_div'}," ohai, a page that sharef screwed up, oops! "."He isn't done restoring it yet....");
 
 	#script declaration
 	print $q->script({type => "text/javascript",src=> "js/login.js"});

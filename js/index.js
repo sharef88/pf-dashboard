@@ -61,6 +61,15 @@ jQuery(document).ready(function(){
                         	ui.newTab.href = id;
 			}
 		},                
+		beforeLoad: function(event, ui) {
+			$('#over_tabs').tabs('option',{ 
+				ajaxOptions:{
+					data: {token:ls.token},
+					type: 'post'
+					} 
+				} 
+			);
+		},
 		ajaxOptions: {
 			type: 'post',
 			data: {token: ls.token},
