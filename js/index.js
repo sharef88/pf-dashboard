@@ -61,19 +61,6 @@ jQuery(document).ready(function(){
                         	ui.newTab.href = id;
 			}
 		},                
-		beforeActivate: function(event, ui) {
-//                        var id = '#'+ui.panel.id;
-			console.log($(ui.newTab).find('a').data('url'));
-                        if ( $(ui.newTab).find('a').data('url') == "login.pl" ) {
-                                $('#over_tabs').tabs("option", { ajaxOptions: { data: {token: ls.token}, type: 'post' } });
-//				ui.ajaxSettings.url+= "?"+$.param({ token: ls.token });
-//				console.log(ui.ajaxSettings);
-				
-                        } else {
-                                $('#over_tabs').tabs("option", { ajaxOptions: { data: {} } });
-
-			}
-                },
 		ajaxOptions: {
 			type: 'post',
 			data: {token: ls.token},

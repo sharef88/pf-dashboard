@@ -1,5 +1,6 @@
 $.fn.login = function() {
 	var stuff = $('#login').serializeArray();
+	console.log(stuff);
 	stuff[2]['value']=sha(stuff[2]['value']);
 	$.post('login.pl', stuff,
 		function(data) {
@@ -48,6 +49,7 @@ jQuery(document).ready( function() {
   //login, function, yes?
   $('#login').submit(
     function() { 
+	console.log('poke');
       $(this).login();
 
       //kill the default submit function
