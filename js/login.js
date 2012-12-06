@@ -54,7 +54,7 @@ jQuery(document).ready( function() {
    //buttonset, jqueryui the system radio buttons (pathfinder/gram)
    $('#register_system > div').buttonset();
 
-   TODO: trolololol, should send stuff to server, needs a function
+   //TODO: trolololol, should send stuff to server, needs a function
    $('#forgot_password').click(function() { alert("Guess you should have written it down then eh?") });
 
    //verify that the verification password matches the first password
