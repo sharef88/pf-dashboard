@@ -43,8 +43,10 @@ unless ( $q->param('login') || $q->param('register') ) {
    );
 
    #login control
-   print $q->div({id=>'login_control'},
-      $q->submit({name=>'submit',value=>'Login'})
+   print $q->span({id=>'login_control'},
+      $q->submit({name=>'submit',value=>'Login'}),
+      $q->a({id=>'forgot_password', href=>'#'},'Forgot Password?'),
+      $q->a({id=>'register', href=>'#'},'Register'),
    );
 
 	
