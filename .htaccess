@@ -7,7 +7,7 @@ allow from all
 #Allow from 69.16.222.93
 #Allow from 67.177.156.20
 #Allow from 71.192.69.200
-#Rewriteengine on
+Rewriteengine on
 
 
 #lw office IP, cuz why not?
@@ -18,3 +18,10 @@ allow from all
 
 #everyone else, to dash.orbanos.org
 #RewriteRule .* http://dash.orbanos.org [L]
+
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ./ index.pl [L]
+

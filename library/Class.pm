@@ -22,4 +22,4 @@ sub AUTOLOAD {
 
 sub DESTROY { }
 
-return(1);
+1;

@@ -5,8 +5,6 @@ use base qw/Class/;
 use DBI;
 use warnings;
 use strict;
-use CGI;
-my $q = CGI->new;
 
 
 
@@ -16,6 +14,19 @@ my $database = "sharef_dnd";
 my $tablename = "character";
 my $user = "sharef_dnd";
 my $pw = "penguin";
+
+
+
+sub new {
+   my $class = shift;
+   my $self  = {@_};
+   
+   return bless $self, $class;
+}
+                        
+
+
+
 =pod
 #connect to the stuff's home
 our $cursor = DBI->connect("DBi:mysql:$database",$user,$pw, {AutoCommit => 1});
