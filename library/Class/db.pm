@@ -16,6 +16,8 @@ sub new {
    my ($class,@_args) = @_;
    my $self = $class->SUPER::new(@_args);
    $self->cursor(DBI->connect("DBi:mysql:$config::db",$config::user,$config::pw, {AutoCommit => 1}));
+
+   return $self;
    
 }
 
