@@ -25,6 +25,17 @@ sub new {
    return $self;
 }
 
+
+sub DESTROY {
+
+   #disconnect properly from the db
+   my ( $self, @args ) = @_;
+
+   $self->cursor->disconnect;
+
+}
+
+
 sub user {
 
    my ($self, $query) = @_;
@@ -118,15 +129,17 @@ sub class {
    if ( exists $queries->{$type} ) {
    
       my $query = $self->cursor->prepare( $queries->{$type} );
-      $query->execute(@_args);
+      $query->execute(@_args) or die('Improper number of arguements for the '.$type.' query');
 
       my @results;
       while ( my $row = $query->fetchrow_hashref ) {
          push @results, $row;
       }
 
+      $query->finish;
+
       return @results;
-   }
+   } else { die('query string is not set up') }
 }   
 
 
