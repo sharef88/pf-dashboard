@@ -5,6 +5,11 @@ use lib qw/library/;
 use strict;
 use warnings;
 use util qw/dice/;
+
+use Class::db;
+
+my $db = db->new;
+
 my $q = CGI->new;
 $q->default_dtd('html');
 
@@ -67,22 +72,17 @@ unless ( $q->param('login') || $q->param('register') ) {
    my @output;
 	
    #scope the sql statement
-   my $user = $sql::sql_user;
 
-   if ($user->execute($q->param('username')) == 1) {
+   my $user = $db->user('user',$q->param('username'));
+   if ( exists $user->{'name'} ) {
       #fetch the infos
-      my $user_info = $user->fetchrow_hashref;
 		
-      #finish the request, close it properly.
-      $user->finish;
-		
-      if ( sha256_hex($q->param('password').$user_info->{'salt'}) eq $user_info->{'password'} ) {
+      if ( sha256_hex($q->param('password').$user->{'salt'}) eq $user->{'password'} ) {
          my $login_time = time;
          #behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
-         my $token =  sha256_hex($user_info->{'name'}.$user_info->{'salt'}.$login_time);
+         my $token =  sha256_hex($user->{'name'}.$user->{'salt'}.$login_time);
          #put the token into the sql db, double verify the spot you're putting it with name and id
-         $sql::sql_token->execute($token, $login_time, $user_info->{'name'}, $user_info->{'id'});
-         $sql::sql_token->finish;
+         $db->user('tokenupdate',$token, $login_time, $user->{'name'}, $user->{'id'});
 
          #push the appropriate data into the output for json conversion
          push @output, (202, $token, $login_time);
