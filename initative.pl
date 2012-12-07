@@ -3,7 +3,7 @@ use CGI qw/standard -no_xhtml/;
 use lib qw/library/;
 use strict;
 use warnings;
-require util;
+use util;
 
 my $q = CGI->new();
 $q->default_dtd('html');

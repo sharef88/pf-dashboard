@@ -8,8 +8,6 @@ use Digest::SHA 'sha256_hex';
 use JSON;
 
 require library::config;
-require library::sql;
-
 
 sub dice {
   my $dice;
