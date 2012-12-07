@@ -129,7 +129,7 @@ sub class {
    if ( exists $queries->{$type} ) {
    
       my $query = $self->cursor->prepare( $queries->{$type} );
-      $query->execute(@_args) or die('Improper number of arguements for the '.$type.' query');
+      $query->execute(@_args); 
 
       my @results;
       while ( my $row = $query->fetchrow_hashref ) {
@@ -138,7 +138,7 @@ sub class {
 
       $query->finish;
 
-      return @results;
+      return \@results;
    } else { die('query string is not set up') }
 }   
 

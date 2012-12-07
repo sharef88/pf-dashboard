@@ -5,7 +5,10 @@ use warnings;
 use lib qw/library/;
 
 use CGI qw/:standard -no-xhtml/;
-require util;
+use util;
+use Class::db;
+
+my $db = db->new;
 
 
 
@@ -29,20 +32,6 @@ unless ( $q->param('arch') ) {
       $q->br;
 
     #prepare the queries
-    my $arch    = $sql::sql_arch;
-    my $classes = $sql::sql_classes;
-
-    $arch->execute();
-    $classes->execute();
-
-    my @classlist;
-    while ( my $item = $classes->fetchrow_hashref() ) {
-        push( @classlist, $item );
-    }
-    my @archlist;
-    while ( my $item = $arch->fetchrow_hashref() ) {
-        push( @archlist, $item );
-    }
 
     print $q->start_div( { id => 'class_select' } ),
       $q->start_Select(
@@ -54,7 +43,7 @@ unless ( $q->param('arch') ) {
       ),
       $q->option( { value => '0' }, '-----' );
 
-    foreach (@classlist) {
+    foreach (@{$db->class('classlist')}) {
         print $q->option( { value => "class_" . $_->{'id'} }, $_->{'name'} );
     }
 
@@ -66,10 +55,10 @@ unless ( $q->param('arch') ) {
     #null value
     print $q->start_optgroup( { id => '0' } ),
       $q->option( { value => '0' }, '-----' ), $q->end_optgroup;
-    foreach my $class (@classlist) {
+    foreach my $class (@{$db->class('classlist')}) {
 
         print $q->start_optgroup( { id => "class_" . $class->{'id'} } );
-        foreach (@archlist) {
+        foreach (@{$db->class('archlist')}) {
             if ( $class->{'name'} eq $_->{'base'} ) {
                 print $q->option( { value => $_->{'id'} }, $_->{'name'} );
             }
@@ -111,23 +100,9 @@ else {
     my $level = param('level');
     $level = 20 if ( $level > 20 || !$level || $level < 1 );
 
-    #get the stuff
-    my $stuff = $sql::sql_class;
-    $stuff->execute( $archid, $level );
-    my $meta_data = $sql::sql_class_meta;
-    $meta_data->execute($archid);
-    my $column_format = $sql::sql_arch_table;
-    $column_format->execute($archid);
-
     #store the stuff in an array
-    my @abilities;
-    while ( my $row = $stuff->fetchrow_hashref() ) {
-        push( @abilities, $row );
-    }
-    my @meta_list;
-    while ( my $row = $meta_data->fetchrow_hashref() ) {
-        push( @meta_list, $row );
-    }
+    my @abilities = @{$db->class('abilities',$q->param('arch'), $level)};
+    my $stats = @{$db->class('stats',$q->param('arch'))}[0];
 
     my $class = $abilities[0]->{'class'};
     my $arch = $abilities[0]->{'arch'};
@@ -136,10 +111,12 @@ else {
 
     #if class isn't the same as archtype, suffix class with archtype name
     if ( $class ne $arch ) {
-        $what .= "($arch)";
+        $what .= " ($arch)";
     }
     #column dictation
-    my @col = split( ',', $column_format->fetchrow_array() );
+# $stats->{ability_columns}; 
+    my @col = split( ',',   $stats->{ability_columns});
+#   my @col = [];
     my @column;
     foreach my $id (@col) {
         foreach my $ability (@abilities) {
@@ -173,14 +150,14 @@ else {
 
         #base attack bonus
         print "<td class='bab'>";
-        print int( $a * ( $meta_list[0]->{'bab'} / 100 ) );
+        print int( $a * ( $stats->{'bab'} / 100 ) );
         print "</td>";
 
         #saves
         foreach ( 'fort', 'ref', 'will' ) {
             print "<td class='saves'>";
-            print int( ( $a / 2 ) + 2 ) if ( $meta_list[0]->{"$_"} eq "good" );
-            print int( $a / 3 ) if ( $meta_list[0]->{"$_"} eq "poor" );
+            print int( ( $a / 2 ) + 2 ) if ( $stats->{"$_"} eq "good" );
+            print int( $a / 3 ) if ( $stats->{"$_"} eq "poor" );
             print "</td>";
         }
         print "<td class='abilities'>";
