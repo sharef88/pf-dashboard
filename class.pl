@@ -104,8 +104,10 @@ else {
     my @abilities = @{$db->class('abilities',$q->param('arch'), $level)};
     my $stats = @{$db->class('stats',$q->param('arch'))}[0];
 
-    my $class = $abilities[0]->{'class'};
-    my $arch = $abilities[0]->{'arch'};
+#    my $class = $abilities[0]->{'class'};
+#    my $arch = $abilities[0]->{'arch'};
+      my ($class, $arch) = @{$stats}{'base','name'};
+   
 
     my $what = "$class ";
 

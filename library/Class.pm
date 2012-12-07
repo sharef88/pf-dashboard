@@ -7,21 +7,6 @@ sub new {
 	return bless $self, $class;
 }
 
-=broke
-sub AUTOLOAD {
-	my ($self) = @_;
-
-	our $AUTOLOAD;
-	my $caller = caller;
-
-	( my $variable = $AUTOLOAD ) =~ s/.*:://;
-
-	*{"${caller}::${variable}"} = subname "${caller}::${variable}" => sub { return shift->{$variable} ||=$_[0] };
-	return $self->{$variable} ||=$_[0];
-
-}
-
-=cut
 sub AUTOLOAD {
 my ($self, $value) = @_;
 
@@ -37,6 +22,7 @@ our $AUTOLOAD;
    $self->{$variable} = $value if defined $value;
    return $self->{$variable};
 }
+
 sub DESTROY { }
 
 1;
