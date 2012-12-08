@@ -15,7 +15,14 @@ sub new {
 
    my ($class,@_args) = @_;
    my $self = $class->SUPER::new(@_args);
-   $self->cursor(DBI->connect("DBi:mysql:$config::db",$config::user,$config::pw, {AutoCommit => 1}));
+   $self->cursor(
+      DBI->connect(
+         "DBi:mysql:$config::db",
+         $config::user,
+         $config::pw, 
+         {AutoCommit => 1}
+      )
+   );
 
    return $self;
    
@@ -106,16 +113,36 @@ sub register {
       create => "
          INSERT INTO `users`
          (`name`, `password`, `salt`, `token`, `token_issue`, `email`, `games`)
-         VALUES ((?), (?), (?), (?), (?), (?), (?))"
-   };
+         VALUES ((?), (?), (?), (?), (?), (?), (?))",
+
+      claim => "
+         UPDATE auth_codes AS code
+         JOIN users AS u
+            ON u.id = code.source 
+         SET code.target = (?)
+         WHERE u.name =  (?) 
+         AND `code`.`code` = (?)
+         AND `code`.`target` IS NULL"
+
+      };
+   #if there is a type request, do things
    if ( $type ) {
+      #if the type submitted is available, do things
       if ( exists $queries->{$type} ) {
+         #update and create queries are restricted, and should be handled differently
          my $restricted = {'create',1,'claim',1};
          if ( !(exists $restricted->{$type}) ) {
+            #prepare the query
+            #TODO move all prepare statements to something.... else, such that they aren't GC'd when the query is done
             my $query = $self->cursor->prepare( $queries->{$type} );
+            
+            #if the execute succedes, return the info, otherwise, 404 it
             my $out = ($query->execute(@_args)>=1) ? $query->fetchrow_hashref : {name=>'404'};
+
+            #send the caller the hashref
             return $out;
-         } else { 
+         } else {
+            #updating and editing things is a restricted art,  the method should return what it inserted, so this will be a double-query system
             die('cannot create yet')
          }
       } else { die('The '.$type.' query hasn\'t been set up yet') }
