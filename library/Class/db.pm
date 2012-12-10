@@ -96,7 +96,7 @@ sub user {
    } else { keys %$queries }
 }
 
-sub register (\%){
+sub register {
 
    my ($self, $_args) = @_;
 
