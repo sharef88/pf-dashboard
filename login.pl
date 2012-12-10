@@ -72,9 +72,9 @@ unless ( $q->param('login') || $q->param('register') ) {
          $q->label('Primary System'),
          $q->div(
             $q->label({for=>'system_gram'},'GRAM'),
-            $q->input({type=>'radio', name=>'register_system', value=>'gram', id=>'system_gram'}),
+            $q->input({type=>'radio', name=>'system', value=>'GRAM', id=>'system_gram'}),
             $q->label({for=>'system_pf'},'Pathfinder'),
-            $q->input({type=>'radio', name=>'register_system', value=>'pf', id=>'system_pf', checked=>'checked'}),
+            $q->input({type=>'radio', name=>'system', value=>'Pathfinder', id=>'system_pf', checked=>'checked'}),
          )
       ),
    );
