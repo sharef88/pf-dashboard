@@ -54,11 +54,11 @@ unless ( $q->param('login') || $q->param('register') ) {
       $q->hr,
       $q->span({id=>'register_gm', title=>'Get this from your GM'},
          $q->label({for=>'register_gm'},'GM Name'),
-         $q->input({type=>'text', name=>'gm', id=>'register_gm'})
+         $q->input({type=>'text', name=>'gm', id=>'register_gm', required=>''})
       ),
       $q->span({id=>'register_auth', title=>'Get this from your GM'},
          $q->label({for=>'register_auth'},'Auth-Code'),
-         $q->input({type=>'text', name=>'auth', id=>'register_auth'})
+         $q->input({type=>'text', name=>'auth', id=>'register_auth', required=>''})
       ),
       $q->p,
       $q->p,
@@ -93,8 +93,6 @@ unless ( $q->param('login') || $q->param('register') ) {
    print $q->end_form,
    $q->end_div,
    $q->end_div;	
-   #divtest, for testing (duh?)
-   print $q->div({id=>'test_div'}," ohai, a page that sharef screwed up, oops! "."He isn't done restoring it yet....");
 
    #script declaration
    print $q->script({type => "text/javascript",src=> "js/login.js"});
