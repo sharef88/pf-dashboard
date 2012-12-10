@@ -90,6 +90,7 @@ sub user {
 
          my $query = $self->cursor->prepare( $queries->{$type} );
          my $out = ($query->execute(@_args)>=1) ? $query->fetchrow_hashref : {name=>'404'};
+         $query->finish;
          return $out;
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
@@ -160,12 +161,15 @@ sub register {
          $_args->{'token'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'token_issue'});
          
          $reg->execute(@{$_args}{'username', 'password', 'salt', 'token', 'token_issue', 'email', 'system'});
+         $reg->finish;
+         my $registered = $self->user('user',$_args->{'username'});
       
          #prep the claim
          my $claim = $self->cursor->prepare( $queries->{'claim'} );
 
          #create the claim array
-         my @array = (2, @{$_args}{'gm','auth'});
+         my @array = ($registered->{'id'}, @{$_args}{'gm','auth'});
+         print Dumper(@array);
 
          #was the claim successful? should output a 1, to indicate 1 row changed
          if ( $claim->execute(@array) == 1 ) {
@@ -174,7 +178,9 @@ sub register {
             my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
             $claimcheck->execute(@array);
-            return $claimcheck->fetchrow_hashref,$_args;
+            my $checked = $claimcheck->fetchrow_hashref;
+            $claimcheck->finish;
+            return $checked;
 
          } else { die('could not claim') }
       } else { die('code not valid') } 
