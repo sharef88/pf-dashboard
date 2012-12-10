@@ -159,8 +159,7 @@ sub register (\%){
          #Behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
          $_args->{'token'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'token_issue'});
          
-         print Dumper($_args);
-#         $reg->execute(@{$_args}{'username', 'password', 'salt', 'token', 'token_issue', 'email', 'system'})
+         $reg->execute(@{$_args}{'username', 'password', 'salt', 'token', 'token_issue', 'email', 'system'});
       
          #prep the claim
          my $claim = $self->cursor->prepare( $queries->{'claim'} );
@@ -175,11 +174,11 @@ sub register (\%){
             my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
             $claimcheck->execute(@array);
-         #   return $claimcheck->fetchrow_hashref,$_args;
+            return $claimcheck->fetchrow_hashref,$_args;
 
-         } else { return } #could not claim
-      } else { return } #no code
-   } else { return } #user already exists
+         } else { die('could not claim') }
+      } else { die('code not valid') } 
+   } else { die('user already exists') }
 }
 
 
