@@ -1,6 +1,9 @@
 $.fn.login = function() {
    var stuff = $('#login').serializeArray();
    stuff[2]['value']=sha(stuff[2]['value']);
+   if ( stuff[0]['name'] == 'register' ) {
+      stuff[3]['value']=sha(stuff[3]['value']);
+   }
    $.post('login.pl', stuff,
       function(data) {
          //var token=$.parseJSON(data);
