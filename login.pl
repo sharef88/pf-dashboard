@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
+use Email::Valid;
 use lib qw/library/;
 use strict;
 use warnings;
@@ -133,9 +134,23 @@ unless ( $q->param('login') || $q->param('register') ) {
 
 
 } elsif ($q->param('register')) {
+   $q->header('application/json');
+   my @output;
+   my $params = $q->Vars;
+   my @key = ('username','password','password2','gm','auth','character','system');
+   my $input;
+
+   if ( Email::Valid->address($params->{email}) ) {
+      $input->{email} = $params->{email};
+   } else { 
+      push @output, '404';
+      print encode_json( \@output );
+      exit;
+   }
+
+   map { $input->{$_} = $params->{$_} } @key;
+      
+   print Dumper($input);
+
 
 }
-
-
-
-$config::cursor->disconnect;
