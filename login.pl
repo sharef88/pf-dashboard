@@ -30,12 +30,12 @@ unless ( $q->param('login') || $q->param('register') ) {
       $q->h3('Login'),
       $q->span({id=>'login_name'},
          $q->label({for=>'login_username'},'Username'),
-         $q->input({type=>'text', name=>'username', id=>'login_username'})
+         $q->input({type=>'text', name=>'username', id=>'login_username', required=>''})
 		
       ),
       $q->span({id=>'login_password'},
          $q->label({for=>'login_password'},'Password'),
-         $q->input({type=>'password', name=>'password', id=>'login_password'})
+         $q->input({type=>'password', name=>'password', id=>'login_password', required=>''})
       );
 
 
@@ -43,8 +43,40 @@ unless ( $q->param('login') || $q->param('register') ) {
    print $q->div({id=>'register_div', style=>'display:none'},
       $q->span({id=>'register_password'},
          $q->label({for=>'register_password'},'Password (Again)'),
-         $q->input({type=>'password', name=>'password2', id=>'register_password'})
-      )
+         $q->input({type=>'password', name=>'password2', id=>'register_password', required=>''})
+      ),
+      $q->span({id=>'register_email'},
+         $q->label({for=>'register_email'},'Email'),
+         $q->input({type=>'email', name=>'email', id=>'register_email'})
+      ),
+      $q->p,
+      $q->h4('Auth Code'),
+      $q->hr,
+      $q->span({id=>'register_gm', title=>'Get this from your GM'},
+         $q->label({for=>'register_gm'},'GM Name'),
+         $q->input({type=>'text', name=>'gm', id=>'register_gm'})
+      ),
+      $q->span({id=>'register_auth', title=>'Get this from your GM'},
+         $q->label({for=>'register_auth'},'Auth-Code'),
+         $q->input({type=>'text', name=>'auth', id=>'register_auth'})
+      ),
+      $q->p,
+      $q->p,
+      $q->h4('Game Options'),
+      $q->hr,
+      $q->span({id=>'register_character'},
+         $q->label({for=>'register_character'},'Main Character'),
+         $q->input({type=>'text', name=>'character', id=>'register_character'})
+      ),
+      $q->span({id=>'register_system'},
+         $q->label('Primary System'),
+         $q->div(
+            $q->label({for=>'system_gram'},'GRAM'),
+            $q->input({type=>'radio', name=>'register_system', value=>'gram', id=>'system_gram'}),
+            $q->label({for=>'system_pf'},'Pathfinder'),
+            $q->input({type=>'radio', name=>'register_system', value=>'pf', id=>'system_pf', checked=>'checked'}),
+         )
+      ),
    );
 
    #login control
