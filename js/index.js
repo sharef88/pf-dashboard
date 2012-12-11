@@ -43,11 +43,11 @@ function loginVerify(event, ui) {
 	var label = label2 ? label2 : $(ui.tab).data('url');
 	//console.log(label);
 	if ( label == 'login.pl' ) {
-		if ( ! ls['token'] ) {
+		if ( ! ls['session'] ) {
 		//	label2 ? $(ui.tab).find('a').html('Login') : $(ui.tab).html('Login');
 		} else {
 		//	label2 ? $(ui.tab).find('a').html('Account') : $(ui.tab).html('Account');
-		postData['token'] = ls.token;
+		postData['session'] = ls.session;
 		}
 	}
 }
@@ -64,7 +64,7 @@ jQuery(document).ready(function(){
 		beforeLoad: function(event, ui) {
 			$('#over_tabs').tabs('option',{ 
 				ajaxOptions:{
-					data: {token:ls.token},
+					data: {session:ls.session},
 					type: 'post'
 					} 
 				} 
@@ -72,7 +72,7 @@ jQuery(document).ready(function(){
 		},
 		ajaxOptions: {
 			type: 'post',
-			data: {token: ls.token},
+			data: {session: ls.session},
 			error: function(xhr, status, index, anchor) {
 				$(anchor.hash).html("Couldn't load this tab. Go yell at sharef about it!");
 			}
