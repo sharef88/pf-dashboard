@@ -7,21 +7,22 @@ $.fn.login = function() {
    console.log($.param(stuff));
    $.post('login.pl', stuff,
       function(data) {
-         //var token=$.parseJSON(data);
-         var token = data[0][0] ? data[0] : data;
-         //[code,token,time]
+         //var session=$.parseJSON(data);
+         var session = data[0][0] ? data[0] : data;
+         //[code,session,time]
          console.log(data);
 
-         switch(token[0]) {
+         switch(session[0]) {
             case 200:
-            //token accepted, logged in
+            //session accepted, logged in
             break;
          case 202:
-            //login successful, new token
-            ls.token = JSON.stringify(token);
+            //login successful, new session
+            ls.session = JSON.stringify(session);
             break;
          case 201:
             //Registration successful
+            ls.session = JSON.stringify(session);
             console.log('Registered');
             break;
          case 401:

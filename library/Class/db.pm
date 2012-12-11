@@ -9,7 +9,7 @@ use base qw/Class/;
 
 use DBI;
 use Data::Dumper;
-use Switch;
+use Data::Uniqid qw/uniqid/;
 use Digest::SHA 'sha256_hex';
 
 
@@ -53,10 +53,10 @@ sub user {
          FROM users 
          WHERE name = (?)",
 
-      tokenupdate => "
+      sessionupdate => "
          UPDATE  `sharef_dnd`.`users` 
-         SET  `token` =  (?),
-         `token_issue` =  (?) 
+         SET  `session` =  (?),
+         `session_issue` =  (?) 
          WHERE  `users`.`name` = (?)
          AND `users`.`id` = (?)",
 
@@ -160,10 +160,13 @@ sub register {
          #Behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
          $_args->{'token'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'token_issue'});
          
+
+         #register the user
          $reg->execute(@{$_args}{'username', 'password', 'salt', 'token', 'token_issue', 'email', 'system'});
          $reg->finish;
          my $registered = $self->user('user',$_args->{'username'});
-      
+
+         
          #prep the claim
          my $claim = $self->cursor->prepare( $queries->{'claim'} );
 
@@ -177,10 +180,11 @@ sub register {
             my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
             $claimcheck->execute(@array);
-            my $checked = $claimcheck->fetchrow_hashref;
-            $claimcheck->finish;
-            return $checked;
-
+#            my $checked = $claimcheck->fetchrow_hashref;
+#            $claimcheck->finish;
+#            return $checked;
+            return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
+         #TODO replace die statements with (return err)
          } else { die('could not claim') }
       } else { die('code not valid') } 
    } else { die('user already exists') }

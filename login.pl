@@ -14,7 +14,7 @@ my $db = db->new;
 my $q = CGI->new;
 $q->default_dtd('html');
 
-my @input = $q->param('token') ? @{decode_json($q->param('token'))} : @{[404,0,0]};
+my @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]};
 
 unless ( $q->param('login') || $q->param('register') ) {
    print $q->header;
@@ -48,7 +48,7 @@ unless ( $q->param('login') || $q->param('register') ) {
       ),
       $q->span({id=>'register_email'},
          $q->label({for=>'register_email'},'Email'),
-         $q->input({type=>'email', name=>'email', id=>'register_email'})
+         $q->input({type=>'email', name=>'email', id=>'register_email', required=>''})
       ),
       $q->p,
       $q->h4('Auth Code'),
@@ -113,7 +113,7 @@ unless ( $q->param('login') || $q->param('register') ) {
          #behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
          my $token =  sha256_hex($user->{'name'}.$user->{'salt'}.$login_time);
          #put the token into the sql db, double verify the spot you're putting it with name and id
-         $db->user('tokenupdate',$token, $login_time, $user->{'name'}, $user->{'id'});
+         $db->user('sessionupdate',$token, $login_time, $user->{'name'}, $user->{'id'});
 
          #push the appropriate data into the output for json conversion
          push @output, (202, $token, $login_time);
@@ -173,10 +173,13 @@ unless ( $q->param('login') || $q->param('register') ) {
 
    #map the rest of the valid inputs to the input
    map { $input->{$_} = $params->{$_} } @key;
-
-   if ( $db->register($input) ) {
+   
+   my @reg = $db->register($input);
+   if ( @reg ) {
       push @output, '201';
+      push @output, @reg;
    } else {
+      print @reg;
       push @output, '409';
    }
    print encode_json(\@output);
