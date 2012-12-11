@@ -134,23 +134,53 @@ unless ( $q->param('login') || $q->param('register') ) {
 
 
 } elsif ($q->param('register')) {
+   #headers, for json
    $q->header('application/json');
+
+   #initilize the output array, for json encoding
    my @output;
+
+   #grab the params
    my $params = $q->Vars;
-   my @key = ('username','password','password2','gm','auth','character','system');
+
+   #valid unverified keys
+   my @key = ('username','gm','auth','character','system');
+
+   #initilize the input
    my $input;
+
+
+   #validate the email
 
    if ( Email::Valid->address($params->{email}) ) {
       $input->{email} = $params->{email};
    } else { 
-      push @output, '404';
+      push @output, '416';
       print encode_json( \@output );
       exit;
    }
 
+
+   #validate the password values
+
+   if ( $params->{password} eq $params->{password2} ) {
+      map { $input->{$_} = $params->{$_} }  ('password','password2');
+   } else {
+      push @output, '416';
+      print encode_json( \@output );
+      exit;
+   }
+
+   #map the rest of the valid inputs to the input
    map { $input->{$_} = $params->{$_} } @key;
-      
-   print Dumper($input);
+
+   if ( $db->register($input) ) {
+      push @output, '201';
+   } else {
+      push @output, '409';
+   }
+   print encode_json(\@output);
+   
 
 
 }

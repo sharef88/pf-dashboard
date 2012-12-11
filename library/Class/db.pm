@@ -169,7 +169,6 @@ sub register {
 
          #create the claim array
          my @array = ($registered->{'id'}, @{$_args}{'gm','auth'});
-         print Dumper(@array);
 
          #was the claim successful? should output a 1, to indicate 1 row changed
          if ( $claim->execute(@array) == 1 ) {

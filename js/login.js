@@ -4,11 +4,13 @@ $.fn.login = function() {
    if ( stuff[0]['name'] == 'register' ) {
       stuff[3]['value']=sha(stuff[3]['value']);
    }
+   console.log($.param(stuff));
    $.post('login.pl', stuff,
       function(data) {
          //var token=$.parseJSON(data);
          var token = data[0][0] ? data[0] : data;
          //[code,token,time]
+         console.log(data);
 
          switch(token[0]) {
             case 200:
@@ -20,16 +22,22 @@ $.fn.login = function() {
             break;
          case 201:
             //Registration successful
+            console.log('Registered');
             break;
          case 401:
             //wrong password
             break;
          case 404:
-        //user doesn't exist
-        break;
+           //user doesn't exist
+           break;
          case 409:
            //could not register, collision
+           console.log('Could not register, error');
            break;
+         case 416:
+            //validation error
+            console.log('fill in the damn blanks properly!');
+            break;
          default:
             console.log('Status code not recognized');
             break;
