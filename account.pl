@@ -6,9 +6,6 @@ use strict;
 use warnings;
 use util qw/dice/;
 use Class::db;
-use JSON::Schema;
-
-my $validate = JSON::Schema->new;
 
 my $db = db->new;
 my $q = CGI->new;
@@ -18,10 +15,16 @@ $q->default_dtd('html');
 print $q->header();
 
 
-my @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]};
+#my @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]};
+my @input;
 if ( $q->param('session') ) {
-   if ( $validate->validate($q->param('session')) ) {
+   try {
+      @input = @{decode_json($q->param('session'))};
       print 'valid';
+   } 
+   catch 
+   {
+      print $@;
    }
 }
 
