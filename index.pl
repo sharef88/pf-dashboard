@@ -41,13 +41,17 @@ print $q->header();
         ]
     );
 
-    print $q->div(
-        { id => 'banner' },
-        $q->img(
-            { src => 'image/banner-bg.png', width => '100%', alt => 'banner' }
-        ),
-        $q->img( { src => 'image/logo_140x40px.png', alt => 'logo' } )
-    );
+   print $q->div(
+      { id => 'banner' },
+      $q->img(
+         { src => 'image/banner-bg.png', width => '100%', alt => 'banner' }
+      ),
+      $q->img( { src => 'image/logo_140x40px.png', alt => 'logo' } ),
+      $q->span({id=>'logout', style=>'display:none'},
+         $q->a({href=>'#'},"Logout")
+      )
+      
+   );
 
     print $q->start_div( { id => 'over_tabs' } ),
       $q->ul(

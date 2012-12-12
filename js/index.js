@@ -42,7 +42,17 @@ $.fn.panel = function(side,width, height) {
 $.fn.account = function() {
    $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl');
    $('#over_tabs').tabs('load',parseInt($("a[data-url='account.pl']").parents('li').index()));
+   $('#logout').show()
    console.log('switched to account page');
+}
+
+$.fn.logout = function() {
+   delete localStorage['session'];
+   
+   $("a[data-url='account.pl']").attr('data-url','login.pl').attr('href','login.pl');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='login.pl']").parents('li').index()));
+   $('#logout').hide();
+   console.log('logged out, switched to login/register');
 }
 
 
@@ -88,4 +98,5 @@ jQuery(document).ready(function(){
 
 	$('[title]' ).tooltip();
 	$('#RightPanel').panel('right',-500,300);
+        $('#logout').click(function(){$(this).logout()});
 });
