@@ -114,7 +114,7 @@ sub register {
 
       create => "
          INSERT INTO `users`
-         (`name`, `password`, `salt`, `token`, `token_issue`, `email`, `games`)
+         (`name`, `password`, `salt`, `session`, `session_issue`, `email`, `games`)
          VALUES (?, ?, ?, ?, ?, ?, ?)",
 
       claim => "
@@ -155,14 +155,14 @@ sub register {
             $_args->{'password'} = sha256_hex($_args->{password}.$_args->{'salt'});
          } else { die('Password mismatch') }
          
-         $_args->{'token_issue'} = time;
+         $_args->{'session_issue'} = time;
 
-         #Behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
-         $_args->{'token'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'token_issue'});
+         #Behold, convoluted sessionid generation.  Instead of generating a random number, this effectivly guarntees unique sessionids
+         $_args->{'session'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'session_issue'});
          
 
          #register the user
-         $reg->execute(@{$_args}{'username', 'password', 'salt', 'token', 'token_issue', 'email', 'system'});
+         $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
          $reg->finish;
          my $registered = $self->user('user',$_args->{'username'});
 
@@ -180,9 +180,6 @@ sub register {
             my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
             $claimcheck->execute(@array);
-#            my $checked = $claimcheck->fetchrow_hashref;
-#            $claimcheck->finish;
-#            return $checked;
             return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
          #TODO replace die statements with (return err)
          } else { die('could not claim') }
