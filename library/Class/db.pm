@@ -43,6 +43,9 @@ sub DESTROY {
 
 }
 
+#--------------------------------#
+#####+++++ Main Methods +++++#####
+#--------------------------------#
 
 sub user {
 
@@ -65,6 +68,14 @@ sub user {
          `session_issue` =  (?) 
          WHERE  `users`.`name` = (?)
          AND `users`.`id` = (?)",
+      
+      #requres newpass, name, id, oldpass.  Updates pass
+      'forgot password' => "
+         UPDATE sharef_dnd.users
+         SET password = ?
+         WHERE users.name = ?
+         AND users.id = ?
+         AND users.password = ?",
 
       'available tokens' => "
          SELECT 
