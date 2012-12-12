@@ -16,7 +16,9 @@ $q->default_dtd('html');
 
 
 my @input;
-eval { @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]}; };
+eval { 
+   @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]}; 
+};
 if ( $@ ) {
    @input = @{[404]};
 }
@@ -29,7 +31,6 @@ if ( exists $test{$input[0]} ) {
    print "<script type='text/javascript'>
       \$(this).account();
       </script>";
-#   do "account.pl session=$q->param('session')";
    exit;
 }
 
@@ -154,7 +155,7 @@ unless ( $q->param('login') || $q->param('register') ) {
 
 } elsif ($q->param('register')) {
    #headers, for json
-   $q->header('application/json');
+   print $q->header('application/json');
 
    #initilize the output array, for json encoding
    my @output;

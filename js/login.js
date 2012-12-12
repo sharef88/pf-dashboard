@@ -1,6 +1,3 @@
-
-
-
 $.fn.login = function() {
    var stuff = $('#login').serializeArray();
    stuff[2]['value']=sha(stuff[2]['value']);
@@ -10,44 +7,43 @@ $.fn.login = function() {
    console.log($.param(stuff));
    $.post('login.pl', stuff,
       function(data) {
-         //var session=$.parseJSON(data);
-         var session = data[0][0] ? data[0] : data;
-         //[code,session,time]
-         console.log(data);
-
-         switch(session[0]) {
+        
+        
+         //data = json: [code,session,time]
+         
+         switch( parseInt(data[0]) ) {
             case 200:
-            //session accepted, logged in
-            $(this).account();
-            break;
-         case 202:
-            //login successful, new session
-            ls.session = JSON.stringify(session);
-            $(this).account();
-            break;
-         case 201:
-            //Registration successful
-            ls.session = JSON.stringify(session);
-            console.log('Registered');
-            $(this).account();
-            break;
-         case 401:
-            //wrong password
-            break;
-         case 404:
-           //user doesn't exist
-           break;
-         case 409:
-           //could not register, collision
-           console.log('Could not register, error');
-           break;
-         case 416:
-            //validation error
-            console.log('fill in the damn blanks properly!');
-            break;
-         default:
-            console.log('Status code not recognized');
-            break;
+               //session accepted, logged in
+               $(this).account();
+               break;
+            case 202:
+               //login successful, new session
+               ls.session = JSON.stringify(data);
+               $(this).account();
+               break;
+            case 201:
+               //Registration successful
+               ls.session = JSON.stringify(data);
+               console.log('Registered');
+               $(this).account();
+               break;
+            case 401:
+               //wrong password
+               break;
+            case 404:
+               //user doesn't exist
+               break;
+            case 409:
+               //could not register, collision
+               console.log('Could not register, error');
+               break;
+            case 416:
+               //validation error
+               console.log('fill in the damn blanks properly!');
+               break;
+            default:
+               console.log('Status code not recognized');
+               break;
          } 
       }
    );
