@@ -26,8 +26,10 @@ my %test = map { $_ => $_ } (200,201,202);
 
 if ( exists $test{$input[0]} ) {
    print $q->header;
-   print "<script type='text/javascript'>console.log('account valid')</script>";
-   do "account.pl session=$q->param('session')";
+   print "<script type='text/javascript'>
+      \$(this).account();
+      </script>";
+#   do "account.pl session=$q->param('session')";
    exit;
 }
 

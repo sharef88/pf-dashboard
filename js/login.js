@@ -1,3 +1,6 @@
+
+
+
 $.fn.login = function() {
    var stuff = $('#login').serializeArray();
    stuff[2]['value']=sha(stuff[2]['value']);
@@ -15,15 +18,18 @@ $.fn.login = function() {
          switch(session[0]) {
             case 200:
             //session accepted, logged in
+            $(this).account();
             break;
          case 202:
             //login successful, new session
             ls.session = JSON.stringify(session);
+            $(this).account();
             break;
          case 201:
             //Registration successful
             ls.session = JSON.stringify(session);
             console.log('Registered');
+            $(this).account();
             break;
          case 401:
             //wrong password
@@ -50,7 +56,7 @@ $.fn.login = function() {
 
 
 
-jQuery(document).ready( function() {
+jQuery('#login_control').ready( function() {
 
    $("#login_control>input").button();
    //login, function, yes?

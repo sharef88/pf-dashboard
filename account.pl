@@ -39,7 +39,8 @@ unless ( $q->param('login') ) {
         ),
       ),
       $q->div({id=>'account_personal'},
-         "This is the personal stuff tab"
+         "This is the personal stuff tab<p>
+         Dis is all unformatted, so shaddup"
       ),
       $q->div({id=>'account_game'},
          "This is the 'Game Preferences tab'"

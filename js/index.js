@@ -38,19 +38,14 @@ $.fn.panel = function(side,width, height) {
 	});
 };
 
-function loginVerify(event, ui) {
-	var label2 = $(ui.tab).find('a').data('url');
-	var label = label2 ? label2 : $(ui.tab).data('url');
-	//console.log(label);
-	if ( label == 'login.pl' ) {
-		if ( ! ls['session'] ) {
-		//	label2 ? $(ui.tab).find('a').html('Login') : $(ui.tab).html('Login');
-		} else {
-		//	label2 ? $(ui.tab).find('a').html('Account') : $(ui.tab).html('Account');
-		postData['session'] = ls.session;
-		}
-	}
+
+$.fn.account = function() {
+   $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='account.pl']").parents('li').index()));
+   console.log('switched to account page');
 }
+
+
 
 jQuery(document).ready(function(){
 	$('#over_tabs').tabs({
@@ -69,6 +64,11 @@ jQuery(document).ready(function(){
 					} 
 				} 
 			);
+                       if (ls.session) { 
+                           if ( $.inArray($.parseJSON(ls.session)[0], [200,201,202]) ) {
+//                             $(this).account(); 
+                           }
+                        }
 		},
 		ajaxOptions: {
 			type: 'post',
