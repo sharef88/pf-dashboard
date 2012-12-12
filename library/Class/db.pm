@@ -69,12 +69,13 @@ sub user {
          WHERE  `users`.`name` = (?)
          AND `users`.`id` = (?)",
       
-      #requres newpass, name, id, oldpass.  Updates pass
-      'forgot password' => "
+      #requres newpass, name, id, email, oldpass.  Updates pass
+      'password reset' => "
          UPDATE sharef_dnd.users
          SET password = ?
          WHERE users.name = ?
          AND users.id = ?
+         AND users.email = ?
          AND users.password = ?",
 
       'available tokens' => "
