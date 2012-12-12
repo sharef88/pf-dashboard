@@ -19,7 +19,7 @@ print $q->header();
 my @input;
 eval { @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]}; };
 if ( $@ ) {
-   @input = @{[404]};
+   @input = @{[500]};
 }
 
 
