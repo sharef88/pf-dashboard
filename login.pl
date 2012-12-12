@@ -14,7 +14,24 @@ my $db = db->new;
 my $q = CGI->new;
 $q->default_dtd('html');
 
-my @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]};
+
+my @input;
+eval { @input = $q->param('session') ? @{decode_json($q->param('session'))} : @{[404,0,0]}; };
+if ( $@ ) {
+   @input = @{[404]};
+}
+
+#my $test =  {};
+my %test = map { $_ => $_ } (200,201,202);
+
+if ( exists $test{$input[0]} ) {
+   print $q->header;
+   print "<script type='text/javascript'>console.log('account valid')</script>";
+   do "account.pl session=$q->param('session')";
+   exit;
+}
+
+
 
 unless ( $q->param('login') || $q->param('register') ) {
    print $q->header;
