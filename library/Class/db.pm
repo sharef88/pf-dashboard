@@ -53,6 +53,12 @@ sub user {
          FROM users 
          WHERE name = (?)",
 
+      sessioncheck => "
+         SELECT * 
+         FROM  `users` 
+         WHERE SESSION =  ?
+         AND session_issue > ?",
+
       sessionupdate => "
          UPDATE  `sharef_dnd`.`users` 
          SET  `session` =  (?),
