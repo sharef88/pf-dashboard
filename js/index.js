@@ -47,7 +47,16 @@ $.fn.account = function() {
 }
 
 $.fn.logout = function() {
-   delete localStorage['session'];
+   ls.session="[307]";
+
+   $('#over_tabs').tabs('option',{
+           ajaxOptions:{
+                   data: {session:ls.session},
+                   type: 'post'
+                   }
+           }
+   );
+
    
    $("a[data-url='account.pl']").attr('data-url','login.pl').attr('href','login.pl');
    $('#over_tabs').tabs('load',parseInt($("a[data-url='login.pl']").parents('li').index()));
