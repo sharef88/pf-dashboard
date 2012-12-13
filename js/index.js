@@ -40,7 +40,15 @@ $.fn.panel = function(side,width, height) {
 
 
 $.fn.account = function() {
-   $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl');
+   $('#over_tabs').tabs('option',{
+           ajaxOptions:{
+                   data: {session: ls.session},
+                   type: 'post'
+                   }
+           }
+   );
+
+   $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl').html('Account');
    $('#over_tabs').tabs('load',parseInt($("a[data-url='account.pl']").parents('li').index()));
    $('#logout').show()
    console.log('switched to account page');
@@ -51,7 +59,7 @@ $.fn.logout = function() {
 
    $('#over_tabs').tabs('option',{
            ajaxOptions:{
-                   data: {session:ls.session},
+                   data: {session: ls.session},
                    type: 'post'
                    }
            }
@@ -78,7 +86,7 @@ jQuery(document).ready(function(){
 		beforeLoad: function(event, ui) {
 			$('#over_tabs').tabs('option',{ 
 				ajaxOptions:{
-					data: {session:ls.session},
+					data: {session: ls.session},
 					type: 'post'
 					} 
 				} 

@@ -59,8 +59,9 @@ sub user {
       sessioncheck => "
          SELECT * 
          FROM  `users` 
-         WHERE SESSION =  ?
-         AND session_issue > ?",
+         WHERE session =  ?
+         AND session_issue > ?
+      ",
 
       sessionupdate => "
          UPDATE  `sharef_dnd`.`users` 
@@ -69,7 +70,6 @@ sub user {
          WHERE  `users`.`name` = (?)
          AND `users`.`id` = (?)",
       
-      #requres newpass, name, id, email, oldpass.  Updates pass
       'password reset' => "
          UPDATE sharef_dnd.users
          SET password = ?

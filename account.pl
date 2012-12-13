@@ -34,7 +34,6 @@ if ( $@ ) {
    exit;
 }
 
-
 #session checking
 my $user = $db->user('sessioncheck',$input[1],time-$Default_Timeout);
 
