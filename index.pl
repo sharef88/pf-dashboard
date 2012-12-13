@@ -47,7 +47,7 @@ print $q->header();
          { src => 'image/banner-bg.png', width => '100%', alt => 'banner' }
       ),
       $q->img( { src => 'image/logo_140x40px.png', alt => 'logo' } ),
-      $q->span({id=>'logout', style=>'display:none'},
+      $q->div({id=>'logout', class=>'ui-widget-header ui-corner-all'},
          $q->a({href=>'#'},"Logout")
       )
       

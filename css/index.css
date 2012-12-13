@@ -37,14 +37,15 @@ position:absolute;
 left: 03%;
 height:45px;
 }
-#banner span {
+#banner div {
 font-size:2em;
 z-index: 100;
-top: 5%;
+top: 20%;
 position:absolute;
 right: 3%;
-background-color:gray;
-opacity:0.7;
+padding:3px;
+height:25px;
+width:60px;
 }
 #init_tabs{
 position:absolute;
