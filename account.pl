@@ -51,8 +51,11 @@ if ( $user->{name} eq '404' ) {
       </script>";
    exit;
 }
-
-
+print <<END;
+<script>
+   \$('#logout>span').html('User: $user->{name}');
+</script>
+END
 
 #--------------------------------------------#
 #+++++++++++ Print the actual page ++++++++++#

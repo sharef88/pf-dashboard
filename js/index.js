@@ -64,6 +64,7 @@ $.fn.logout = function() {
                    }
            }
    );
+   $('#logout>span').html('');
 
    
    $("a[data-url='account.pl']").attr('data-url','login.pl').attr('href','login.pl');

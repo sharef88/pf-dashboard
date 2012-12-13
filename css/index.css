@@ -40,13 +40,19 @@ html, body {
 #banner div {
    z-index: 100;
    top:15%;
-   width:200px;
    position:absolute;
    right: 3%;
    padding:4px;
+   display:none;
 }
 #banner div>* {
    float:right;
+}
+#banner #logout>span {
+   float:left;
+   font-size:1.75em;
+   margin:4px;
+   margin-right:20px;
 }
 #init_tabs{
    position:absolute;
