@@ -115,5 +115,5 @@ jQuery(document).ready(function(){
 
 	$('[title]' ).tooltip();
 	$('#RightPanel').panel('right',-500,300);
-        $('#logout').click(function(){$(this).logout()});
+        $('#logout>a').button().click(function(){$(this).logout()});
 });
