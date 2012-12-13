@@ -1,8 +1,8 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
 use Email::Valid;
-use lib qw/library/;
+use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
 use strict;
 use warnings;
 use util qw/dice/;

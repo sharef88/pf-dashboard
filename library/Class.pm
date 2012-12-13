@@ -1,3 +1,4 @@
+#!/usr/local/bin/perl
 package Class;
 use Sub::Name;
 
