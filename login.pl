@@ -194,6 +194,7 @@ unless ( $q->param('login') || $q->param('register') ) {
    #map the rest of the valid inputs to the input
    map { $input->{$_} = $params->{$_} } @key;
    
+   #actually do the registering
    my @reg = $db->register($input);
    if ( @reg ) {
       push @output, '201';
