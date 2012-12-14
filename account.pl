@@ -51,11 +51,15 @@ if ( $user->{name} eq '404' ) {
       </script>";
    exit;
 }
-print <<END;
+
+#print a jquery statement to insert the user next to the logout button
+print <<"END";
 <script>
    \$('#logout>span').html('User: $user->{name}');
 </script>
 END
+
+
 
 #--------------------------------------------#
 #+++++++++++ Print the actual page ++++++++++#
@@ -68,7 +72,7 @@ print $q->Link({ href=> 'css/account.css', rel=>'stylesheet',type=>'text/css' })
 
 #account page
 print $q->start_div( { id => 'account_tabs' } ),
-   #Print the options
+   #Print the tabs
    $q->ul(
      { id => 'account_menu' },
      #option 1: personal stuff
@@ -81,6 +85,10 @@ print $q->start_div( { id => 'account_tabs' } ),
          { class => '.account_menu' },
          $q->a( { href => '#account_game'}, 'Game Preferences' )
      ),
+     $q->li(
+        { class => '.account_menu' },
+        $q->a( { href => '#account_token'}, 'Token Management' )
+      ),
    ), #end ul#account_menu
    
    #Print the actual pages
@@ -92,7 +100,17 @@ print $q->start_div( { id => 'account_tabs' } ),
    $q->div({id=>'account_game'},
       "This is the 'Game Preferences tab'<p>You prefer $user->{games}"
    ),#end div#account_game
+   $q->start_div({id=>'account_token'});
+      print "<ul>";
+      foreach ( $db->token($user->{name},'owned') ) {
+         print qq%
+         <li>$_->{flag} : $_->{code} : $_->{target}</li>
+         %;
+      }
+      print "</ul>";
+      print "This is where tokens will be managed, go figure";
    
+   print $q->end_div, #end div#account_token
    $q->end_div(); #end div#account_tabs
 
 
