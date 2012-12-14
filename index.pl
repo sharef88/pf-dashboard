@@ -10,7 +10,23 @@ my $q = CGI->new();
 # set dtd to something html5 savvy
 $q->default_dtd('html');
 
-print $q->header();
+#print $q->header();
+print $q->header(
+    # date in the past
+    -expires       => 'Sat, 26 Jul 1997 05:00:00 GMT',
+    # HTTP/1.0
+    -Pragma        => 'no-cache',
+    # HTTP/1.1 + IE-specific (pre|post)-check
+    -Cache_Control => join(', ', qw(
+        private
+        no-cache
+        no-store
+        must-revalidate
+        max-age=0
+        pre-check=0
+        post-check=0
+    )),
+);
 
     print $q->start_html(
         -title => 'TO Dashboard',
