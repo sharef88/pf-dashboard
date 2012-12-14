@@ -76,30 +76,6 @@ sub user {
          AND users.id = ?
          AND users.email = ?
          AND users.password = ?",
-
-      'available tokens' => "
-         SELECT 
-            source, 
-            code, 
-            target, 
-            flag
-         FROM auth_codes
-         JOIN users 
-            ON users.id = auth_codes.source
-         WHERE users.name = (?)
-         AND target IS NULL",
-
-      'owned tokens' => "
-         SELECT 
-            source, 
-            code, 
-            target, 
-            flag
-         FROM auth_codes
-         JOIN users 
-            ON users.id = auth_codes.target
-         WHERE users.name = (?)"
-
    };
 
    if ( $type ) {
@@ -154,6 +130,107 @@ sub options {
       $query->execute($user,$option);
       return @{$query->fetchrow_arrayref};
    } 
+
+   
+}
+sub token {
+ 
+   my ($self, $user, $action, @_args) = @_;
+   my @flags = ('Register','GM','SGM','NPC');
+   my $queries = {
+      create => "
+      INSERT INTO
+         auth_codes
+         (code, source, flag, notes)
+      VALUES
+         (?,?,?,?)",
+
+      update => "
+         UPDATE auth_codes AS code
+         SET code.target = ?
+         WHERE source.code =  ?
+         AND code.code = ?
+         AND code.target IS NULL",
+      
+      
+      delete => "
+         DELETE
+         FROM
+            auth_codes
+         WHERE
+            source = ?
+         AND
+            code = ?",
+            
+      owned => " 
+        SELECT
+            id,
+            source,
+            code,
+            target,
+            flag,
+            notes
+         FROM auth_codes
+         WHERE source = ?",
+         
+       assigned => "
+        SELECT
+            id,
+            source,
+            code,
+            target,
+            flag,
+            notes
+         FROM auth_codes
+         WHERE target = ?"
+   };
+
+   
+   #input validation, user needs to exist, and $action must be a valid query key
+   if ( ! $user ) { return; }
+   if ( ! exists $queries->{$action} ) { return; }
+
+
+   my $user_record = $self->user('user',$user);
+
+   if ($action eq 'create') {
+      #assumed @_args = flag[,notes])
+
+      #generate the unique id
+      my $code = uniqid;
+      
+      #validate the requested flag
+      if (! $_args[1] ~~ @flags) { return }
+
+      #validate the args length
+      if ($#_args+1 < 2) { push @_args, '' };
+
+      
+      my $query = $self->cursor->prepare($queries->{create});
+      if ($query->execute($code,$user_record->{id}, @_args) == 1) {
+
+         #pull the now-owned list of tokens, and return the last element
+         my @check = $self->token($user,'owned');
+         return @check[-1];
+      }
+      
+      
+   } elsif ($action ~~ {'owned','assigned'} ) {
+
+      #prep and execute, no need to validate, as all input is already sanitized fully
+      my $query = $self->cursor->prepare($queries->{$action});
+      $query->execute($user_record->{id});
+
+      #parse the DBI output into an array
+      my @output;
+      while ( my $row = $query->fetchrow_hashref) {
+         push @output, $row;
+      }
+      #sort the array by the id number, so, chronologically
+      my @output_sorted = sort { $a->{id} <=> $b->{id} } @output;
+      return @output_sorted;
+   } 
+      
 
    
 }
