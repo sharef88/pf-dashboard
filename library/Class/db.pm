@@ -60,8 +60,7 @@ sub user {
          SELECT * 
          FROM  `users` 
          WHERE session =  ?
-         AND session_issue > ?
-      ",
+         AND session_issue > ?",
 
       sessionupdate => "
          UPDATE  `sharef_dnd`.`users` 
@@ -113,6 +112,50 @@ sub user {
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
    } else { keys %$queries }
+}
+
+
+sub options {
+   #Should accept (uid, option, [value])
+   #If value, set option to value
+   #otherwise display value
+   my ($self, $user, $option, $value) = @_;
+   my $queries = {
+      get => "
+         SELECT 
+            o.option_value
+         FROM user_options 
+            AS o
+         JOIN users AS u 
+            ON u.id = o.user_id
+         JOIN option_cataloge AS s 
+            ON s.id = o.option_id
+         WHERE u.name = ?
+         AND s.option_name = ?",
+      set => "UPDATE user_options AS o
+         JOIN users AS u
+            ON u.id = o.user_id
+         JOIN option_cataloge AS s
+            ON s.id = o.option_id
+         SET option_value = ?
+         WHERE u.name=?
+         AND s.option_name = ?"
+   };
+   
+   if ($value) {
+      my $query = $self->cursor->prepare($queries->{set});
+      if ( $query->execute($value,$user,$option) == 1 ) {
+         return 1;
+      } else {
+         return;
+      }
+   } else {
+      my $query = $self->cursor->prepare($queries->{get});
+      $query->execute($user,$option);
+      return @{$query->fetchrow_arrayref};
+   } 
+
+   
 }
 
 sub register {
