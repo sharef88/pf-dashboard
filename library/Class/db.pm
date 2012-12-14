@@ -56,6 +56,11 @@ sub user {
          FROM users 
          WHERE name = (?)",
 
+      id => "
+         SELECT DISTINCT *
+         FROM users
+         WHERE id = ?",
+
       sessioncheck => "
          SELECT * 
          FROM  `users` 
