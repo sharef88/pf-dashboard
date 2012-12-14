@@ -61,6 +61,11 @@ sub user {
          FROM users
          WHERE id = ?",
 
+      list => "
+         SELECT DISTINCT 
+            name, email
+         FROM users",
+
       sessioncheck => "
          SELECT * 
          FROM  `users` 
@@ -87,9 +92,20 @@ sub user {
       if ( exists $queries->{$type} ) {
 
          my $query = $self->cursor->prepare( $queries->{$type} );
-         my $out = ($query->execute(@_args)>=1) ? $query->fetchrow_hashref : {name=>'404'};
+         my $check = $query->execute(@_args);
+         if ( $check==1) {
+            return $query->fetchrow_hashref; 
+         } elsif ($check > 1) {
+            my @out;
+            while (my $row = $query->fetchrow_hashref) {
+               push @out, $row;
+            }
+            return @out;
+         } else { 
+            return {name=>'404'};
+         }
+         
          $query->finish;
-         return $out;
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
    } else { keys %$queries }
@@ -167,13 +183,37 @@ sub token {
             code = ?",
             
       owned => " 
-         SELECT *
-         FROM auth_codes
+         SELECT 
+            codes.id, 
+            s.name AS source_name, 
+            t.name AS target_name, 
+            codes.code, 
+            codes.flag,
+            codes.source AS source_id,
+            codes.target AS target_id,
+            codes.notes
+         FROM auth_codes as codes
+         JOIN users AS s
+            ON s.id = codes.source
+         LEFT JOIN users AS t
+            ON t.id = codes.target
          WHERE source = ?",
-         
+               
        assigned => "
-         SELECT *
-         FROM auth_codes
+         SELECT 
+            codes.id, 
+            s.name AS source_name, 
+            t.name AS target_name, 
+            codes.code, 
+            codes.flag,
+            codes.source AS source_id,
+            codes.target AS target_id
+            notes
+         FROM auth_codes as codes
+         LEFT JOIN users AS s
+            ON s.id = codes.source
+         JOIN users AS t
+            ON t.id = codes.target
          WHERE target = ?"
    };
 
