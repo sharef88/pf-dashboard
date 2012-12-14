@@ -134,7 +134,7 @@ sub options {
    
 }
 sub token {
- 
+   #method for manipulation and display of tokens 
    my ($self, $user, $action, @_args) = @_;
    my @flags = ('Register','GM','SGM','NPC');
    my $queries = {
@@ -152,7 +152,6 @@ sub token {
          AND code.code = ?
          AND code.target IS NULL",
       
-      
       delete => "
          DELETE
          FROM
@@ -163,24 +162,12 @@ sub token {
             code = ?",
             
       owned => " 
-        SELECT
-            id,
-            source,
-            code,
-            target,
-            flag,
-            notes
+         SELECT *
          FROM auth_codes
          WHERE source = ?",
          
        assigned => "
-        SELECT
-            id,
-            source,
-            code,
-            target,
-            flag,
-            notes
+         SELECT *
          FROM auth_codes
          WHERE target = ?"
    };
@@ -211,11 +198,14 @@ sub token {
 
          #pull the now-owned list of tokens, and return the last element
          my @check = $self->token($user,'owned');
-         return @check[-1];
+         
+         #return the most recent token
+         return $check[-1];
       }
       
-      
+   
    } elsif ($action ~~ {'owned','assigned'} ) {
+      #owned and assigned tokens are handled the same, just knowing if source == user or target == user
 
       #prep and execute, no need to validate, as all input is already sanitized fully
       my $query = $self->cursor->prepare($queries->{$action});
@@ -229,10 +219,29 @@ sub token {
       #sort the array by the id number, so, chronologically
       my @output_sorted = sort { $a->{id} <=> $b->{id} } @output;
       return @output_sorted;
-   } 
-      
 
-   
+      
+   } elsif ($action eq 'delete') {
+      #accepts a code, verifies it is owned
+      my $query = $self->cursor->prepare($queries->{delete});
+      if ($query->execute($user_record->{id},$_args[0]) == 1) {
+         return 1;
+      } else {
+         return;
+      }
+      
+   } elsif ($action eq 'update') {
+      #Class::db->token('user','update',code,target)
+      my $query = $self->cursor->prepare($queries->{update});
+      #translate the target name to a uid
+      my $tid = $self->user('user',$_args[1])->{id};
+      #run the update, if true, cool, otherwise, false
+      if ($query->execute($tid,$user_record->{id},$_args[0]) == 1) {
+         return 1;
+      } else {
+         return;
+      }
+   }
 }
 
 sub register {
