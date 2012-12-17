@@ -101,14 +101,17 @@ print $q->start_div( { id => 'account_tabs' } ),
       "This is the 'Game Preferences tab'<p>You prefer $user->{games}"
    ),#end div#account_game
    $q->start_div({id=>'account_token'});
-      print "<table>";
+      print "<div class='owned_tokens ui-widget-header ui-corner-all'>";
       foreach ( $db->token($user->{name},'owned') ) {
          print qq%
-         <tr><td>$_->{flag}</td><td>$_->{code}</td><td> $_->{target_name}</td><td>$_->{notes}</td></tr>
+         <span class="ui-corner-all">
+            <span class = 'ui-state-default ui-corner-all'>$_->{code}</span>
+            <span class = 'ui-state-default ui-corner-all'>$_->{target_name}</span>
+            <span class = 'ui-state-default ui-corner-all'>$_->{notes}</span>
+         </span>
          %;
       }
-      print "</table>";
-      print "This is where tokens will be managed, go figure";
+      print "</div>";
    
    print $q->end_div, #end div#account_token
    $q->end_div(); #end div#account_tabs
