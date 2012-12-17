@@ -7,27 +7,28 @@ use Data::Dumper;
 use Data::Uniqid qw/uniqid/;
 use CGI;
 use Try::Tiny;
-
-use Email::Sender::Simple qw(sendmail);
-use Email::Simple;
-use Email::Simple::Creator;
+use MIME::Lite;
 
 my $q = CGI->new;
 
-my $stuff = db->new;
+my $db = db->new;
 
-#my $email = Email::Simple->create(
-#  header => [
-#    To      => '"Andy" <gamerzi@gmail.com>',
-#    From    => '"Orbanos" <admin@orbanos.org>',
-#    Subject => "message from dev.orbanos",
-#  ],
-#  body => "Greetings from andy's site!\n",
-#);
+my $msg = MIME::Lite->new( 
+   From => 'admin@orbanos.org', 
+   To=> 'gamerzi@gmail.com', 
+   Type => 'text/plain', 
+   Subject => 'Hello from orbanos!' , 
+   Data => 'Greetings from dev.orbanos.org'
+); 
 
-#sendmail($email);
+#$msg->send;
+my $user = $db->user('user','sharef');
 
-print Dumper(@INC);
+
+my @stuff = $db->token($user->{name},'assigned');
+print Dumper(@stuff);
+
+
 
 #print uniqid;
 
