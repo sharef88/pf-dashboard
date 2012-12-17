@@ -5,31 +5,33 @@
    right:0;
    bottom:40px;
 }
-div.owned_tokens {
+div.token_table {
    position:relative;
-   width:430;
    padding:5px;
 }
-div.owned_tokens>span {
+div.token_table>span {
    height:20px;
    width:100%;
    position:relative;
    display:table-row;
    overflow:hidden;
 }
-div.owned_tokens>span>* {
+div.token_table>span>* {
    height:15px;
    display:table-cell;
    float:left;
    padding:2px;
    margin:2px;
 }
-div.owned_tokens>span>span:nth-child(1) {
+div.token_table>span>span.token_code {
    width:110px;
 }
-div.owned_tokens>span>span:nth-child(2) {
+div.token_table>span>span.token_target {
    width:150px;
 }
-div.owned_tokens>span>span:nth-child(3) {
+div.token_table>span>span.token_source {
+   width:150px;
+}
+div.token_table>span>span.token_notes {
    width:140px;
 }

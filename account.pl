@@ -77,16 +77,16 @@ print $q->start_div( { id => 'account_tabs' } ),
      { id => 'account_menu' },
      #option 1: personal stuff
      $q->li(
-         { class => '.account_menu' },
+         { class => 'account_menu' },
          $q->a( { href => '#account_personal'}, 'Personal Details' ) 
      ),
      #option 2: game stuff
      $q->li(
-         { class => '.account_menu' },
+         { class => 'account_menu' },
          $q->a( { href => '#account_game'}, 'Game Preferences' )
      ),
      $q->li(
-        { class => '.account_menu' },
+        { class => 'account_menu' },
         $q->a( { href => '#account_token'}, 'Token Management' )
       ),
    ), #end ul#account_menu
@@ -99,22 +99,44 @@ print $q->start_div( { id => 'account_tabs' } ),
    
    $q->div({id=>'account_game'},
       "This is the 'Game Preferences tab'<p>You prefer $user->{games}"
-   ),#end div#account_game
-   $q->start_div({id=>'account_token'});
-      print "<div class='owned_tokens ui-widget-header ui-corner-all'>";
-      foreach ( $db->token($user->{name},'owned') ) {
-         print qq%
-         <span class="ui-corner-all">
-            <span class = 'ui-state-default ui-corner-all'>$_->{code}</span>
-            <span class = 'ui-state-default ui-corner-all'>$_->{target_name}</span>
-            <span class = 'ui-state-default ui-corner-all'>$_->{notes}</span>
-         </span>
-         %;
-      }
-      print "</div>";
+   ); #end div#account_game
+
    
-   print $q->end_div, #end div#account_token
-   $q->end_div(); #end div#account_tabs
+   print $q->start_div({id=>'account_token'});
+
+      print "<div id='token_tables'>";
+         print "<h3>Owned Tokens</h3>"; 
+         print "<div id= 'owned_tokens' class='token_table ui-widget-header ui-corner-bottom'>";
+         foreach ( $db->token($user->{name},'owned') ) {
+            print qq%
+            <span>
+               <span class = 'token_flag ui-state-default ui-corner-all'>$_->{flag}</span>
+               <span class = 'token_code ui-state-default ui-corner-all'>$_->{code}</span>
+               <span class = 'token_target ui-state-default ui-corner-all'>$_->{target_name}</span>
+               <span class = 'token_notes ui-state-default ui-corner-all'>$_->{notes}</span>
+            </span>
+            %;
+         }
+         print "</div>"; #end owned_tokens
+
+         print "<h3>Assigned Tokens</h3>";
+         print "<div id= 'assigned_tokens' class='token_table ui-widget-header ui-corner-bottom'>";
+         foreach ( $db->token($user->{name},'assigned') ) {
+            print qq%
+            <span>
+               <span class = 'token_flag ui-state-default ui-corner-all'>$_->{flag}</span>
+               <span class = 'token_code ui-state-default ui-corner-all'>$_->{code}</span>
+               <span class = 'token_source ui-state-default ui-corner-all'>$_->{source_name}</span>
+               <span class = 'token_note ui-state-default ui-corner-all'>$_->{notes}</span>
+            </span>
+            %;
+         }
+         print "</div>"; #end assigned_tokens
+      print "</div>"; #end token_tables
+
+   
+   print $q->end_div(), #end div#account_token
+   $q->end_div; #end div#account_tabs
 
 
 

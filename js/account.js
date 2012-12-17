@@ -7,4 +7,10 @@ $('#account_tabs').ready(function() {
     heightStyle: 'fill',
   });
 });
+$('#token_tables').ready(function() {
+   $('#token_tables').accordion({
+   heightStyle: 'content',
+   collapsible: true
+   });
+});
 
