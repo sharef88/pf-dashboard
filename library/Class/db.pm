@@ -207,14 +207,14 @@ sub token {
             codes.code, 
             codes.flag,
             codes.source AS source_id,
-            codes.target AS target_id
-            notes
+            codes.target AS target_id,
+            codes.notes
          FROM auth_codes as codes
-         LEFT JOIN users AS s
-            ON s.id = codes.source
          JOIN users AS t
             ON t.id = codes.target
-         WHERE target = ?"
+         LEFT JOIN users AS s
+            ON s.id = codes.source
+         WHERE codes.target = ?"
    };
 
    
@@ -224,6 +224,8 @@ sub token {
 
 
    my $user_record = $self->user('user',$user);
+
+   my @listing = qw/owned assigned/;
 
    if ($action eq 'create') {
       #assumed @_args = flag[,notes])
@@ -249,7 +251,7 @@ sub token {
       }
       
    
-   } elsif ($action ~~ {'owned','assigned'} ) {
+   } elsif ($action ~~ @listing ) {
       #owned and assigned tokens are handled the same, just knowing if source == user or target == user
 
       #prep and execute, no need to validate, as all input is already sanitized fully
