@@ -65,7 +65,7 @@ html, body {
 #over_menu { 
    padding: .2em .1em .2em .2em; 
    float: left; 
-   width: 14em; 
+   width: 170px; 
    height:100%; 
    margin:0; 
    position:relative;
@@ -81,7 +81,7 @@ html, body {
 #over_menu li a { 
    display:block; 
    height:18px; 
-   width:110px; 
+   width:115px; 
    float:left; 
 }
 #over_menu li>span { 
