@@ -1,12 +1,17 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 package db;
-use Class;
-use base qw/Class/;
-use DBI;
+
 use warnings;
 use strict;
+
+use Class;
+use base qw/Class/;
+
+use DBI;
 use Data::Dumper;
-use Switch;
+use Data::Uniqid qw/uniqid/;
+use Digest::SHA 'sha256_hex';
+
 
 
 sub new {
@@ -15,7 +20,14 @@ sub new {
 
    my ($class,@_args) = @_;
    my $self = $class->SUPER::new(@_args);
-   $self->cursor(DBI->connect("DBi:mysql:$config::db",$config::user,$config::pw, {AutoCommit => 1}));
+   $self->cursor(
+      DBI->connect(
+         "DBi:mysql:$config::db",
+         $config::user,
+         $config::pw, 
+         {AutoCommit => 1}
+      )
+   );
 
    return $self;
    
@@ -31,6 +43,9 @@ sub DESTROY {
 
 }
 
+#--------------------------------#
+#####+++++ Main Methods +++++#####
+#--------------------------------#
 
 sub user {
 
@@ -41,86 +56,329 @@ sub user {
          FROM users 
          WHERE name = (?)",
 
-      tokenupdate => "
+      id => "
+         SELECT DISTINCT *
+         FROM users
+         WHERE id = ?",
+
+      list => "
+         SELECT DISTINCT 
+            name, email
+         FROM users",
+
+      sessioncheck => "
+         SELECT * 
+         FROM  `users` 
+         WHERE session =  ?
+         AND session_issue > ?",
+
+      sessionupdate => "
          UPDATE  `sharef_dnd`.`users` 
-         SET  `token` =  (?),
-         `token_issue` =  (?) 
+         SET  `session` =  (?),
+         `session_issue` =  (?) 
          WHERE  `users`.`name` = (?)
          AND `users`.`id` = (?)",
-
-      'available tokens' => "
-         SELECT 
-            source, 
-            code, 
-            target, 
-            flag
-         FROM auth_codes
-         JOIN users 
-            ON users.id = auth_codes.source
-         WHERE users.name = (?)
-         AND target IS NULL",
-
-      'owned tokens' => "
-         SELECT 
-            source, 
-            code, 
-            target, 
-            flag
-         FROM auth_codes
-         JOIN users 
-            ON users.id = auth_codes.target
-         WHERE users.name = (?)"
-
+      
+      'password reset' => "
+         UPDATE sharef_dnd.users
+         SET password = ?
+         WHERE users.name = ?
+         AND users.id = ?
+         AND users.email = ?
+         AND users.password = ?",
    };
 
    if ( $type ) {
       if ( exists $queries->{$type} ) {
 
          my $query = $self->cursor->prepare( $queries->{$type} );
-         my $out = ($query->execute(@_args)>=1) ? $query->fetchrow_hashref : {name=>'404'};
-         return $out;
+         my $check = $query->execute(@_args);
+         if ( $check==1) {
+            return $query->fetchrow_hashref; 
+         } elsif ($check > 1) {
+            my @out;
+            while (my $row = $query->fetchrow_hashref) {
+               push @out, $row;
+            }
+            return @out;
+         } else { 
+            return {name=>'404'};
+         }
+         
+         $query->finish;
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
    } else { keys %$queries }
 }
 
+
+sub options {
+   #Should accept (uid, option, [value])
+   #If value, set option to value
+   #otherwise display value
+   my ($self, $user, $option, $value) = @_;
+   my $queries = {
+      get => "
+         SELECT 
+            o.option_value
+         FROM user_options 
+            AS o
+         JOIN users AS u 
+            ON u.id = o.user_id
+         JOIN option_cataloge AS s 
+            ON s.id = o.option_id
+         WHERE u.name = ?
+         AND s.option_name = ?",
+      set => "UPDATE user_options AS o
+         JOIN users AS u
+            ON u.id = o.user_id
+         JOIN option_cataloge AS s
+            ON s.id = o.option_id
+         SET option_value = ?
+         WHERE u.name=?
+         AND s.option_name = ?"
+   };
+   
+   if ($value) {
+      my $query = $self->cursor->prepare($queries->{set});
+      if ( $query->execute($value,$user,$option) == 1 ) {
+         return 1;
+      } else {
+         return;
+      }
+   } else {
+      my $query = $self->cursor->prepare($queries->{get});
+      $query->execute($user,$option);
+      return @{$query->fetchrow_arrayref};
+   } 
+
+   
+}
+sub token {
+   #method for manipulation and display of tokens 
+   my ($self, $user, $action, @_args) = @_;
+   my @flags = ('Register','GM','SGM','NPC');
+   my $queries = {
+      create => "
+      INSERT INTO
+         auth_codes
+         (code, source, flag, notes)
+      VALUES
+         (?,?,?,?)",
+
+      update => "
+         UPDATE auth_codes AS code
+         SET code.target = ?
+         WHERE source.code =  ?
+         AND code.code = ?
+         AND code.target IS NULL",
+      
+      delete => "
+         DELETE
+         FROM
+            auth_codes
+         WHERE
+            source = ?
+         AND
+            code = ?",
+            
+      owned => " 
+         SELECT 
+            codes.id, 
+            s.name AS source_name, 
+            t.name AS target_name, 
+            codes.code, 
+            codes.flag,
+            codes.source AS source_id,
+            codes.target AS target_id,
+            codes.notes
+         FROM auth_codes as codes
+         JOIN users AS s
+            ON s.id = codes.source
+         LEFT JOIN users AS t
+            ON t.id = codes.target
+         WHERE source = ?",
+               
+       assigned => "
+         SELECT 
+            codes.id, 
+            s.name AS source_name, 
+            t.name AS target_name, 
+            codes.code, 
+            codes.flag,
+            codes.source AS source_id,
+            codes.target AS target_id,
+            codes.notes
+         FROM auth_codes as codes
+         JOIN users AS t
+            ON t.id = codes.target
+         LEFT JOIN users AS s
+            ON s.id = codes.source
+         WHERE codes.target = ?"
+   };
+
+   
+   #input validation, user needs to exist, and $action must be a valid query key
+   if ( ! $user ) { return; }
+   if ( ! exists $queries->{$action} ) { return; }
+
+
+   my $user_record = $self->user('user',$user);
+
+   my @listing = qw/owned assigned/;
+
+   if ($action eq 'create') {
+      #assumed @_args = flag[,notes])
+
+      #generate the unique id
+      my $code = uniqid;
+      
+      #validate the requested flag
+      if (! $_args[1] ~~ @flags) { return }
+
+      #validate the args length
+      if ($#_args+1 < 2) { push @_args, '' };
+
+      
+      my $query = $self->cursor->prepare($queries->{create});
+      if ($query->execute($code,$user_record->{id}, @_args) == 1) {
+
+         #pull the now-owned list of tokens, and return the last element
+         my @check = $self->token($user,'owned');
+         
+         #return the most recent token
+         return $check[-1];
+      }
+      
+   
+   } elsif ($action ~~ @listing ) {
+      #owned and assigned tokens are handled the same, just knowing if source == user or target == user
+
+      #prep and execute, no need to validate, as all input is already sanitized fully
+      my $query = $self->cursor->prepare($queries->{$action});
+      $query->execute($user_record->{id});
+
+      #parse the DBI output into an array
+      my @output;
+      while ( my $row = $query->fetchrow_hashref) {
+         push @output, $row;
+      }
+      #sort the array by the id number, so, chronologically
+      my @output_sorted = sort { $a->{id} <=> $b->{id} } @output;
+      return @output_sorted;
+
+      
+   } elsif ($action eq 'delete') {
+      #accepts a code, verifies it is owned
+      my $query = $self->cursor->prepare($queries->{delete});
+      if ($query->execute($user_record->{id},$_args[0]) == 1) {
+         return 1;
+      } else {
+         return;
+      }
+      
+   } elsif ($action eq 'update') {
+      #Class::db->token('user','update',code,target)
+      my $query = $self->cursor->prepare($queries->{update});
+      #translate the target name to a uid
+      my $tid = $self->user('user',$_args[1])->{id};
+      #run the update, if true, cool, otherwise, false
+      if ($query->execute($tid,$user_record->{id},$_args[0]) == 1) {
+         return 1;
+      } else {
+         return;
+      }
+   }
+}
+
 sub register {
 
-   my ($self, $type, @_args) = @_;
+   my ($self, $_args) = @_;
 
    my $queries = {
       check => "
-         SELECT 
-            source, 
-            code, 
-            target, 
-            flag
-         FROM auth_codes
-         JOIN users 
-            ON users.id = auth_codes.source
-         WHERE users.name = (?)
-         AND code = (?)
-         AND flag = 'Register'
-         AND target IS NULL",
+         SELECT code.*
+         FROM auth_codes AS code
+         JOIN users AS s
+            ON s.id = code.source
+         WHERE s.name = (?)
+         AND code.code = (?)
+         AND code.flag = 'Register'
+         AND code.target IS NULL",
 
       create => "
          INSERT INTO `users`
-         (`name`, `password`, `salt`, `token`, `token_issue`, `email`, `games`)
-         VALUES ((?), (?), (?), (?), (?), (?), (?))"
+         (`name`, `password`, `salt`, `session`, `session_issue`, `email`, `games`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)",
+
+      claim => "
+         UPDATE auth_codes AS code
+         JOIN users AS u
+            ON u.id = code.source 
+         SET code.target = ?
+         WHERE u.name =  ? 
+         AND code.code = ?
+         AND code.target IS NULL",
+         
+      claimcheck => "
+         SELECT code.* 
+         FROM auth_codes AS code
+         JOIN users AS u
+            ON u.id = code.source
+         WHERE code.target = ?
+         AND u.name = ?
+         AND code.code = ?",
    };
-   if ( $type ) {
-      if ( exists $queries->{$type} ) {
-         my $restricted = {'create',1,'claim',1};
-         if ( !(exists $restricted->{$type}) ) {
-            my $query = $self->cursor->prepare( $queries->{$type} );
-            my $out = ($query->execute(@_args)>=1) ? $query->fetchrow_hashref : {name=>'404'};
-            return $out;
-         } else { 
-            die('cannot create yet')
-         }
-      } else { die('The '.$type.' query hasn\'t been set up yet') }
-   } else { keys %$queries }
-                           
+   my $check = $self->cursor->prepare( $queries->{'check'} );
+  
+   #does the user not exist yet?
+   if ( $self->user('user',$_args->{'username'})->{'name'} ne $_args->{'username'} ) {
+   
+      #is the code valid?
+      my $check = $self->cursor->prepare( $queries->{'check'} );
+      if ( $check->execute(@{$_args}{'gm','auth'}) == 1 ) {
+
+         #register that guy!
+         my $reg = $self->cursor->prepare( $queries->{'create'} );
+         
+
+         #make salt
+         $_args->{'salt'} = int(rand(2**32));
+        
+         if ($_args->{'password'} eq $_args->{'password2'}) {
+            $_args->{'password'} = sha256_hex($_args->{password}.$_args->{'salt'});
+         } else { die('Password mismatch') }
+         
+         $_args->{'session_issue'} = time;
+
+         #Behold, convoluted sessionid generation.  Instead of generating a random number, this effectivly guarntees unique sessionids
+         $_args->{'session'} =  sha256_hex($_args->{'username'}.$_args->{'salt'}.$_args->{'session_issue'});
+         
+
+         #register the user
+         $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
+         $reg->finish;
+         my $registered = $self->user('user',$_args->{'username'});
+
+         
+         #prep the claim
+         my $claim = $self->cursor->prepare( $queries->{'claim'} );
+
+         #create the claim array
+         my @array = ($registered->{'id'}, @{$_args}{'gm','auth'});
+
+         #was the claim successful? should output a 1, to indicate 1 row changed
+         if ( $claim->execute(@array) == 1 ) {
+
+            #prep the claim-check, check allll the things!
+            my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
+                     
+            $claimcheck->execute(@array);
+            return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
+         #TODO replace die statements with (return err)
+         } else { die('could not claim') }
+      } else { die('code not valid') } 
+   } else { die('user already exists') }
 }
 
 

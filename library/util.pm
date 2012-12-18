@@ -1,13 +1,15 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 use strict;
 use warnings;
-require DBI;
+use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
+
+use DBI;
 use Data::Dumper;
 use List::Util qw/sum/;
 use Digest::SHA 'sha256_hex';
-use JSON;
+use JSON::XS;
 
-require library::config;
+use library::config;
 
 sub dice {
   my $dice;

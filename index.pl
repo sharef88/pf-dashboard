@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/local/bin/perl 
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
 use lib qw/library/;
@@ -10,7 +10,23 @@ my $q = CGI->new();
 # set dtd to something html5 savvy
 $q->default_dtd('html');
 
-print $q->header();
+#print $q->header();
+print $q->header(
+    # date in the past
+    -expires       => 'Sat, 26 Jul 1997 05:00:00 GMT',
+    # HTTP/1.0
+    -Pragma        => 'no-cache',
+    # HTTP/1.1 + IE-specific (pre|post)-check
+    -Cache_Control => join(', ', qw(
+        private
+        no-cache
+        no-store
+        must-revalidate
+        max-age=0
+        pre-check=0
+        post-check=0
+    )),
+);
 
     print $q->start_html(
         -title => 'TO Dashboard',
@@ -41,13 +57,18 @@ print $q->header();
         ]
     );
 
-    print $q->div(
-        { id => 'banner' },
-        $q->img(
-            { src => 'image/banner-bg.png', width => '100%', alt => 'banner' }
-        ),
-        $q->img( { src => 'image/logo_140x40px.png', alt => 'logo' } )
-    );
+   print $q->div(
+      { id => 'banner' },
+      $q->img(
+         { src => 'image/banner-bg.png', width => '100%', alt => 'banner' }
+      ),
+      $q->img( { src => 'image/logo_140x40px.png', alt => 'logo' } ),
+      $q->div({id=>'logout', class=>'ui-widget-header ui-corner-all'},
+         $q->span(''),
+         $q->a({href=>'#'},"Logout")
+      )
+      
+   );
 
     print $q->start_div( { id => 'over_tabs' } ),
       $q->ul(

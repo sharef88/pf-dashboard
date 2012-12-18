@@ -1,35 +1,49 @@
 $.fn.login = function() {
    var stuff = $('#login').serializeArray();
    stuff[2]['value']=sha(stuff[2]['value']);
+   if ( stuff[0]['name'] == 'register' ) {
+      stuff[3]['value']=sha(stuff[3]['value']);
+   }
+   console.log($.param(stuff));
    $.post('login.pl', stuff,
       function(data) {
-         //var token=$.parseJSON(data);
-         var token = data[0][0] ? data[0] : data;
-         //[code,token,time]
-
-         switch(token[0]) {
+        
+        
+         //data = json: [code,session,time]
+         
+         switch( parseInt(data[0]) ) {
             case 200:
-            //token accepted, logged in
-            break;
-         case 202:
-            //login successful, new token
-            ls.token = JSON.stringify(token);
-            break;
-         case 201:
-            //Registration successful
-            break;
-         case 401:
-            //wrong password
-            break;
-         case 404:
-        //user doesn't exist
-        break;
-         case 409:
-           //could not register, collision
-           break;
-         default:
-            console.log('Status code not recognized');
-            break;
+               //session accepted, logged in
+               $(this).account();
+               break;
+            case 202:
+               //login successful, new session
+               ls.session = JSON.stringify(data);
+               $(this).account();
+               break;
+            case 201:
+               //Registration successful
+               ls.session = JSON.stringify(data);
+               console.log('Registered');
+               $(this).account();
+               break;
+            case 401:
+               //wrong password
+               break;
+            case 404:
+               //user doesn't exist
+               break;
+            case 409:
+               //could not register, collision
+               console.log('Could not register, error');
+               break;
+            case 416:
+               //validation error
+               console.log('fill in the damn blanks properly!');
+               break;
+            default:
+               console.log('Status code not recognized');
+               break;
          } 
       }
    );
@@ -38,7 +52,7 @@ $.fn.login = function() {
 
 
 
-jQuery(document).ready( function() {
+jQuery('#login_control').ready( function() {
 
    $("#login_control>input").button();
    //login, function, yes?

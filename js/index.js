@@ -38,19 +38,42 @@ $.fn.panel = function(side,width, height) {
 	});
 };
 
-function loginVerify(event, ui) {
-	var label2 = $(ui.tab).find('a').data('url');
-	var label = label2 ? label2 : $(ui.tab).data('url');
-	//console.log(label);
-	if ( label == 'login.pl' ) {
-		if ( ! ls['token'] ) {
-		//	label2 ? $(ui.tab).find('a').html('Login') : $(ui.tab).html('Login');
-		} else {
-		//	label2 ? $(ui.tab).find('a').html('Account') : $(ui.tab).html('Account');
-		postData['token'] = ls.token;
-		}
-	}
+
+$.fn.account = function() {
+   $('#over_tabs').tabs('option',{
+           ajaxOptions:{
+                   data: {session: ls.session},
+                   type: 'post'
+                   }
+           }
+   );
+
+   $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl').html('Account');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='account.pl']").parents('li').index()));
+   $('#logout').show()
+   console.log('switched to account page');
 }
+
+$.fn.logout = function() {
+   ls.session="[307]";
+
+   $('#over_tabs').tabs('option',{
+           ajaxOptions:{
+                   data: {session: ls.session},
+                   type: 'post'
+                   }
+           }
+   );
+   $('#logout>span').html('');
+
+   
+   $("a[data-url='account.pl']").attr('data-url','login.pl').attr('href','login.pl');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='login.pl']").parents('li').index()));
+   $('#logout').hide();
+   console.log('logged out, switched to login/register');
+}
+
+
 
 jQuery(document).ready(function(){
 	$('#over_tabs').tabs({
@@ -64,15 +87,20 @@ jQuery(document).ready(function(){
 		beforeLoad: function(event, ui) {
 			$('#over_tabs').tabs('option',{ 
 				ajaxOptions:{
-					data: {token:ls.token},
+					data: {session: ls.session},
 					type: 'post'
 					} 
 				} 
 			);
+                       if (ls.session) { 
+                           if ( $.inArray($.parseJSON(ls.session)[0], [200,201,202]) ) {
+//                             $(this).account(); 
+                           }
+                        }
 		},
 		ajaxOptions: {
 			type: 'post',
-			data: {token: ls.token},
+			data: {session: ls.session},
 			error: function(xhr, status, index, anchor) {
 				$(anchor.hash).html("Couldn't load this tab. Go yell at sharef about it!");
 			}
@@ -88,4 +116,5 @@ jQuery(document).ready(function(){
 
 	$('[title]' ).tooltip();
 	$('#RightPanel').panel('right',-500,300);
+        $('#logout>a').button().click(function(){$(this).logout()});
 });
