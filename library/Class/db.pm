@@ -7,6 +7,7 @@ use strict;
 use Class;
 use base qw/Class/;
 
+use Apache::DBI;
 use DBI;
 use Data::Dumper;
 use Data::Uniqid qw/uniqid/;
@@ -38,6 +39,8 @@ sub DESTROY {
 
    #disconnect properly from the db
    my ( $self, @args ) = @_;
+
+   $self->cursor->rollback;
 
    $self->cursor->disconnect;
 
@@ -356,27 +359,44 @@ sub register {
          
 
          #register the user
-         $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
-         $reg->finish;
-         my $registered = $self->user('user',$_args->{'username'});
+         $self->cursor->{AutoCommit} = 0;
+         $self->cursor->{RaiseError} =1;
+         #transactionally register that guy and claim the token.
+         eval {
+            $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
+            $reg->finish;
+            my $registered = $self->user('user',$_args->{'username'});
 
          
-         #prep the claim
-         my $claim = $self->cursor->prepare( $queries->{'claim'} );
+            #prep the claim
+            my $claim = $self->cursor->prepare( $queries->{'claim'} );
 
-         #create the claim array
-         my @array = ($registered->{'id'}, @{$_args}{'gm','auth'});
+            #create the claim array
+            my @array = ($registered->{'id'}, @{$_args}{'gm','auth'});
 
-         #was the claim successful? should output a 1, to indicate 1 row changed
-         if ( $claim->execute(@array) == 1 ) {
+            #was the claim successful? should output a 1, to indicate 1 row changed
+            if ( $claim->execute(@array) == 1 ) {
 
-            #prep the claim-check, check allll the things!
-            my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
+               #prep the claim-check, check allll the things!
+               my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
-            $claimcheck->execute(@array);
-            return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
-         #TODO replace die statements with (return err)
-         } else { die('could not claim') }
+               $claimcheck->execute(@array);
+               $self->cursor->commit;
+               $self->cursor->{AutoCommit} = 1;
+               $self->cursor->{RaiseError} =0;
+               return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
+            } else { die('could not claim') }
+         };
+         if ($@) {
+            warn "Transaction aborted because $@";
+            $self->cursor->{AutoCommit} = 1;
+            $self->cursor->{RaiseError} =0;
+            # now rollback to undo the incomplete changes
+            # but do it in an eval{} as it may also fail
+            eval { $self->cursor->rollback };
+            # add other application on-error-clean-up code here
+         }
+         #TODO replace die statements with (return err) AND switch this to transaction format
       } else { die('code not valid') } 
    } else { die('user already exists') }
 }
