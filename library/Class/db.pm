@@ -359,10 +359,14 @@ sub register {
          
 
          #register the user
-         $self->cursor->{AutoCommit} = 0;
-         $self->cursor->{RaiseError} =1;
+         
+         
          #transactionally register that guy and claim the token.
          eval {
+            #turn on the ability to transact db-style
+            $self->cursor->{AutoCommit} = 0;
+            $self->cursor->{RaiseError} =1;
+
             $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
             $reg->finish;
             my $registered = $self->user('user',$_args->{'username'});
@@ -381,21 +385,20 @@ sub register {
                my $claimcheck = $self->cursor->prepare( $queries->{'claimcheck'} );
                      
                $claimcheck->execute(@array);
-               $self->cursor->commit;
-               $self->cursor->{AutoCommit} = 1;
-               $self->cursor->{RaiseError} =0;
-               return @{$self->user('user',$_args->{'username'})}{'session','session_issue'};
             } else { die('could not claim') }
          };
          if ($@) {
             warn "Transaction aborted because $@";
-            $self->cursor->{AutoCommit} = 1;
-            $self->cursor->{RaiseError} =0;
             # now rollback to undo the incomplete changes
             # but do it in an eval{} as it may also fail
             eval { $self->cursor->rollback };
-            # add other application on-error-clean-up code here
+         } else {
+            $self->cursor->commit;
+            return @{$self->user('user',$_args->{'username'})}{'session','session_issue'}; 
          }
+         $self->cursor->{AutoCommit} = 1;
+         $self->cursor->{RaiseError} =0;
+                                           
          #TODO replace die statements with (return err) AND switch this to transaction format
       } else { die('code not valid') } 
    } else { die('user already exists') }
