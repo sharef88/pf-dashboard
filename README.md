@@ -7,4 +7,5 @@ The Dashboard is my first foray into git, perl, jquery, css and sql.  I think I'
 
 This is a dashboard built around the pathfinder (http://d20pfsrd.com) table gaming system.  There will be other systems included later.
 
-pf-dashboard/login,  Working on getting the login system properly set up, as well as registration, a basic account page, and forgot password aspects
+cleanup branch for general code cleanup, formatting, schema-unification (globals in all caps, privates prefixed with __)
+
