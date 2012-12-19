@@ -1,16 +1,24 @@
 $.fn.login = function() {
+
+   //stuff is the login form, serialized.  This also includes the register fields if enabled.
    var stuff = $('#login').serializeArray();
+
+   //hash the password
    stuff[2]['value']=sha(stuff[2]['value']);
+   
+   //if register, hash the 2nd password
    if ( stuff[0]['name'] == 'register' ) {
       stuff[3]['value']=sha(stuff[3]['value']);
    }
-   console.log($.param(stuff));
+
+   //post the stuff to login.pl
    $.post('login.pl', stuff,
       function(data) {
-        
-        
+      
+         //standard json session codes, time isn't actually used
          //data = json: [code,session,time]
          
+         //respond to the data codes properly
          switch( parseInt(data[0]) ) {
             case 200:
                //session accepted, logged in
@@ -44,10 +52,10 @@ $.fn.login = function() {
             default:
                console.log('Status code not recognized');
                break;
-         } 
-      }
-   );
-}
+         } //end switch
+      } //end post(function()
+   ); //end post
+} //end function
 
 
 
@@ -62,8 +70,8 @@ jQuery('#login_control').ready( function() {
 
          //kill the default submit function
          return false;
-      }
-   );
+      } //end submit(function()
+   ); //end submit
 
    //buttonset, jqueryui the system radio buttons (pathfinder/gram)
    $('#register_system > div').buttonset();
@@ -103,7 +111,7 @@ jQuery('#login_control').ready( function() {
 
          // change the register link
          $('#login_tab #register').html('Back');
-      }, 
+      }, //end register-show function
       function() {
          // reset everything that was above 
          $('#register_div').hide('fast');
@@ -117,5 +125,5 @@ jQuery('#login_control').ready( function() {
          $('#over_menu a[data-url="login.pl"]').html('Login');
          $('#login_tab #register').html('Register');
       }
-   );
-})
+   ); //end register/login toggle
+}) //end ready function
