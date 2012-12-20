@@ -18,7 +18,6 @@ use Digest::SHA 'sha256_hex';
 sub new {
    #un-repo'd file with the login info library/config.pm
    require config;
-
    my ($class,@_args) = @_;
    my $self = $class->SUPER::new(@_args);
    $self->cursor(
@@ -36,10 +35,8 @@ sub new {
 
 
 sub DESTROY {
-
    #disconnect properly from the db
    my ( $self, @args ) = @_;
-
    $self->cursor->rollback;
 
    $self->cursor->disconnect;
@@ -142,21 +139,31 @@ sub options {
          AND s.option_name = ?"
    };
    
+   #if there isn't a value to set, then just get the current value
    if ($value) {
-      my $query = $self->cursor->prepare($queries->{set});
-      if ( $query->execute($value,$user,$option) == 1 ) {
-         return 1;
+      eval {
+         my $query = $self->cursor->prepare($queries->{set});
+         $self->cursor->{AutoCommit} = 0;
+         $self->cursor->{RaiseError} = 1;
+         $query->execute($value,$user,$option); 
+      };
+      if ($@) {
+         warn "could not set $option to $value because of $@";
+         $self->cursor->rollback;
       } else {
-         return;
+         $self->cursor->commit;
+         return 1;
       }
+      $self->cursor->{AutoCommit} = 1;
+      $self->cursor->{RaiseError} = 0;
    } else {
       my $query = $self->cursor->prepare($queries->{get});
       $query->execute($user,$option);
-      return @{$query->fetchrow_arrayref};
+      return $query->fetchrow_arrayref;
    } 
-
-   
 }
+
+
 sub token {
    #method for manipulation and display of tokens 
    my ($self, $user, $action, @_args) = @_;
