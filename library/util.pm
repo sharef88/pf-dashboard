@@ -12,31 +12,29 @@ use JSON::XS;
 use library::config;
 
 sub dice {
-  my $dice;
-  my $number;
-  ($dice, $number) = @_;
-  $number = 1 unless($_[1]);
-  $dice = 20 unless($_[0]);
-  my @result;
-  foreach(1..$number){
-    push(@result,1+int(rand($dice)));
-  }
-  sum(@result);
+   my ($dice, $number) = @_;
+   $number = 1 unless($_[1]);
+   $dice = 20 unless($_[0]);
+   my @result;
+   foreach(1..$number){
+      push @result,1+int(rand($dice+1));
+   }
+   sum(@result);
 }
 
 
 
 sub array_check {
-  my ($check,@stuff) = @_;
-  foreach (@stuff) {
-    if ( $check == $_ ) {
-      return 1;
-    }
-  }
+   my ($check,@stuff) = @_;
+   foreach (@stuff) {
+      if ( $check == $_ ) {
+         return 1;
+      }
+   }
 }
 
 sub salt {
-  return (int(rand(314159))*314159);
+   return (int(rand(100000))*314159);
 }
 
 
