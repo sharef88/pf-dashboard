@@ -6,9 +6,9 @@ use lib qw/library/;
 
 use CGI qw/:standard -no-xhtml/;
 use util;
-use Class::db;
+use Class::db::rules;
 
-my $db = db->new;
+my $db = rules->new;
 
 
 
