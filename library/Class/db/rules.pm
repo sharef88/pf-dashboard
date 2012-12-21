@@ -7,42 +7,8 @@ use strict;
 use Class::db;
 use base qw/db/;
 
-use Apache::DBI;
-use DBI;
-use Data::Dumper;
-use Data::Uniqid qw/uniqid/;
-use Digest::SHA 'sha256_hex';
 
 
-
-sub new {
-   #un-repo'd file with the login info library/config.pm
-   require config;
-   my ($class,@_args) = @_;
-   my $self = $class->SUPER::new(@_args);
-   $self->cursor(
-      DBI->connect(
-         "DBi:mysql:$config::db",
-         $config::user,
-         $config::pw, 
-         {AutoCommit => 0}
-      )
-   );
-
-   $self->cursor->{RaiseError} = 1;
-   return $self;
-   
-}
-
-
-sub DESTROY {
-   #disconnect properly from the db
-   my ( $self, @args ) = @_;
-   $self->cursor->rollback;
-
-   $self->cursor->disconnect;
-
-}
 
 #--------------------------------#
 #####+++++ Main Methods +++++#####

@@ -5,9 +5,8 @@ use Data::Dumper;
 use strict;
 use warnings;
 use util qw/dice/;
-use Class::db;
+use Class::db::user;
 
-my $db = db->new;
 my $q = CGI->new;
 
 $q->default_dtd('html');
@@ -42,10 +41,10 @@ if ( $@ ) {
 }
 
 #Get the corresponding user to the session id
-my $user = $db->user('sessioncheck',$input[1],time-$Default_Timeout);
+my $user = $db->new($input[1]);
 
 #if the user comes back as a 404, the session was invalid, force-logout to clear session
-if ( $user->{name} eq '404' ) {
+if ( $user->{user}->{name} eq '404' ) {
    print "<script type=text/javascript>
       \$(this).logout();
       </script>";
@@ -55,7 +54,7 @@ if ( $user->{name} eq '404' ) {
 #print a jquery statement to insert the user next to the logout button
 print <<"END";
 <script>
-   \$('#logout>span').html('User: $user->{name}');
+   \$('#logout>span').html('User: $user->{user}->{name}');
 </script>
 END
 

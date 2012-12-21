@@ -5,11 +5,11 @@ use Email::Valid;
 use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
 use strict;
 use warnings;
-use util qw/dice/;
+use util;
 
-use Class::db;
+use Class::db::user;
 
-my $db = db->new;
+my $db = user->new;
 
 my $q = CGI->new;
 $q->default_dtd('html');
@@ -24,9 +24,7 @@ if ( $@ ) {
 }
 
 #my $test =  {};
-my %test = map { $_ => $_ } (200,201,202);
-
-if ( exists $test{$input[0]} ) {
+if ( $input[0] ~~ [200,201,202] ) {
    print $q->header;
    print "<script type='text/javascript'>
       \$(this).account();
@@ -123,8 +121,9 @@ unless ( $q->param('login') || $q->param('register') ) {
    my @output;
 	
    #scope the sql statement
-
-   my $user = $db->user('user',$q->param('username'));
+   my $username = $q->param('username');
+   my $user_obj = user->new( {name=>"$username"} );
+   my $user = $user_obj->{user};
    if ( exists $user->{'name'} ) {
       #fetch the infos
 		
