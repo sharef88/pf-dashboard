@@ -28,11 +28,11 @@ sub new {
    }
    
    if ( $check ) {
-      $self->{user} = $check;
-      print 1;
+      if ( exists $check->{password} ) {
+         map  $self->{$_} = $check->{$_}, keys %$check;
+      }
       return $self;
    } else {
-      print 'fail';
       return;
    }
 
@@ -67,11 +67,11 @@ sub user {
          WHERE session =  ?",
 
       sessionupdate => "
-         UPDATE  `sharef_dnd`.`users` 
-         SET  `session` =  (?),
-         `session_issue` =  (?) 
-         WHERE  `users`.`name` = (?)
-         AND `users`.`id` = (?)",
+         UPDATE users 
+         SET  session = ?,
+         session_issue = ? 
+         WHERE users.name = ?
+         AND users.id = ?",
       
       'password reset' => "
          UPDATE sharef_dnd.users
@@ -87,17 +87,21 @@ sub user {
 
          my $query = $self->cursor->prepare( $queries->{$type} );
          my $check = $query->execute(@_args);
-         print Dumper($self);
-
+         my $out;
+         if ( $type ~~ ['sessionupdate','password reset'] ) {
+            $self->cursor->commit;
+            return 1;
+         };
+                     
          if ( $check == 1) {
-            return $query->fetchrow_hashref; 
+            $out = $query->fetchrow_hashref; 
          } elsif ($check > 1) {
-            return $query->fetchall_arrayref({}); 
+            $out = $query->fetchall_arrayref({}); 
          } else { 
-            return {name=>'404'};
+            $out = {name=>'404'};
          }
-         
          $query->finish;
+         return $out;
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
    } else { keys %$queries }
@@ -355,7 +359,6 @@ sub register {
          eval {
             #turn on the ability to transact db-style
             $reg->execute(@{$_args}{'username', 'password', 'salt', 'session', 'session_issue', 'email', 'system'});
-            $reg->finish;
             my $registered = $self->user('user',$_args->{'username'});
 
          
