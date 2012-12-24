@@ -23,10 +23,17 @@ sub new {
    my $check=1;
    if ( defined $_args->{name} ) {
       $check = $self->user('user',$_args->{name});
-   } elsif (defined $_args->{session} ) {
-      $check = $self->user('sessioncheck',$_args->{'session'});
-      #TODO session expire checks go here, as it needs to check against custom session expire times.
+   } elsif ( defined $_args->{session} ) {
       
+      #default timeout
+      my $Default_Timeout = 86400;
+      
+      #get the user per session
+      $check = $self->user('sessioncheck',$_args->{'session'});
+      if ( $check ) {
+         #if sessioncheck comes back empty, than it shouldn't do this
+         $check = ( $check->{session_issue} > time-$Default_Timeout ) ? $check : undef;
+      }
    }
    #check defaults to 1, so, if nothing else clears it, than its kosher 
    if ( $check ) {
@@ -102,11 +109,11 @@ sub user {
             $out = $query->fetchrow_hashref; 
          } elsif ($check > 1) {
             $out = $query->fetchall_arrayref({}); 
+            $query->finish;
+            return $out;
          } else { 
-            $out = {name=>'404'};
+            return;
          }
-         $query->finish;
-         return $out;
          
       } else { die('The '.$type.' query hasn\'t been set up yet') }
    } else { keys %$queries }
