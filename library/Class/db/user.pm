@@ -26,6 +26,7 @@ sub new {
    } elsif (defined $_args->{session} ) {
       $check = $self->user('sessioncheck',$_args->{'session'});
       #TODO session expire checks go here, as it needs to check against custom session expire times.
+      
    }
    #check defaults to 1, so, if nothing else clears it, than its kosher 
    if ( $check ) {
@@ -145,27 +146,41 @@ sub options {
                ?
             )
          ON DUPLICATE KEY UPDATE 
-            option_value=?"
+            option_value=?",
+      list => "
+         SELECT 
+            id, 
+            option_name AS name, 
+            option_description AS description, 
+            grouping
+         FROM
+            option_cataloge"
    };
    
    #if there isn't a value to set, then just get the current value
-   if ($value) {
-      eval {
-         my $query = $self->cursor->prepare($queries->{set});
-         $query->execute($user,$option,$value,$value) or die; 
-      };
-      if ($@) {
-         warn "could not set $option to $value because of $@";
-         $self->cursor->rollback;
+   if ($option) {
+      if ($value) {
+         eval {
+            my $query = $self->cursor->prepare($queries->{set});
+            $query->execute($user,$option,$value,$value) or die; 
+         };
+         if ($@) {
+            warn "could not set $option to $value because of $@";
+            $self->cursor->rollback;
+         } else {
+            $self->cursor->commit;
+            return 1;
+         }
       } else {
-         $self->cursor->commit;
-         return 1;
+         my $query = $self->cursor->prepare($queries->{get});
+         $query->execute($user,$option);
+         return $query->fetchall_arrayref({});
       }
    } else {
-      my $query = $self->cursor->prepare($queries->{get});
-      $query->execute($user,$option);
+      my $query = $self->cursor->prepare($queries->{list});
+      $query->execute();
       return $query->fetchall_arrayref({});
-   } 
+   }
 }
 
 
