@@ -2,16 +2,19 @@
 use strict;
 use warnings;
 use lib qw/library/;
-use Class::db;
+
+use Class::db::rules;
+use Class::db::user;
+use util;
+
 use Data::Dumper;
-use Data::Uniqid qw/uniqid/;
 use CGI;
-use Try::Tiny;
 use MIME::Lite;
 
 my $q = CGI->new;
 
-my $db = db->new;
+my $rules = rules->new;
+my $user = user->new({name=>'sharef'});
 
 my $msg = MIME::Lite->new( 
    From => 'admin@orbanos.org', 
@@ -22,13 +25,8 @@ my $msg = MIME::Lite->new(
 ); 
 
 #$msg->send;
-my $user = $db->user('user','sharef');
 
+print sha256_hex($q->param('password').$user->{'salt'});
+print Dumper($user->user('id',2));
 
-my @stuff = $db->token($user->{name},'assigned');
-print Dumper(@stuff);
-
-
-
-#print uniqid;
-
+#print Dumper(@stuff);

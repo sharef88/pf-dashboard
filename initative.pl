@@ -11,14 +11,8 @@ $q->default_dtd('html');
 print $q->header();
 
 unless ( $q->param('len') ) {
+   print $q->Link({ href=> 'css/initative.css', rel=>'stylesheet',type=>'text/css' });
 	
-    print $q->start_html(
-        -title => 'TO Dashboard',
-        -script => {
-                -type => "text/javascript",
-                -src  => "js/initative.js"
-            },        
-    );
       print $q->start_div( { id => 'initative' } ),
       $q->start_div( { id => 'init_tabs' } ),
       $q->ul(
@@ -49,8 +43,8 @@ unless ( $q->param('len') ) {
       $q->div( { -id => 'sorted_entry' }, '<span>stuff</span>' ),
       $q->end_div(),
       $q->end_div(),
-      $q->end_div(),
-      $q->end_html();
+      $q->end_div();
+   print $q->script({type=>'text/javascript', src=>'js/initative.js'});
 
 }
 else {

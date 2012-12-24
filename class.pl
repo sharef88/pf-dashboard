@@ -6,9 +6,9 @@ use lib qw/library/;
 
 use CGI qw/:standard -no-xhtml/;
 use util;
-use Class::db;
+use Class::db::rules;
 
-my $db = db->new;
+my $db = rules->new;
 
 
 
@@ -20,17 +20,9 @@ my $q = CGI->new;
 print $q->header;
 
 unless ( $q->param('arch') ) {
-#    print $q->script( type=>'text/javascript', src =>'js/class.js' );
-    print $q->start_html(
-        -title  => "Class Search",
-        -script => {         
-            -type => "text/javascript",
-            -src  => "js/class.js"
-        },
-        -style => [ { 'src' => 'css/class.css' } ],
-      ),
-      $q->br;
 
+   print $q->Link({ href=> 'css/class.css', rel=>'stylesheet',type=>'text/css' });
+   
     #prepare the queries
 
     print $q->start_div( { id => 'class_select' } ),
@@ -88,10 +80,10 @@ unless ( $q->param('arch') ) {
       $q->div(
         {     id     => "classdata" },
         "Select a class, archtype and level from above to see the level progression info"
-      ),
-      $q->end_html();
+      );
+      
+   print $q->script({type=>'text/javascript', src=>'js/class.js'});
 
-    #requery
 }
 else {
 

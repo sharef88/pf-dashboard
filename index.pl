@@ -47,7 +47,7 @@ print $q->header(
             },
             {
                 -type => 'text/javascript',
-                -src  => 'http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/sha256.js'
+                -src  => 'js/crypto.js'
             },
             {
                 -type => "text/javascript",
