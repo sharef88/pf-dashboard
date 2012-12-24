@@ -79,23 +79,24 @@ unless ( $q->param('login') || $q->param('register') ) {
          $q->label({for=>'register_auth'},'Auth-Code'),
          $q->input({type=>'text', name=>'auth', id=>'register_auth', required=>''})
       ),
-      $q->p,
-      $q->p,
-      $q->h4('Game Options'),
-      $q->hr,
-      $q->span({id=>'register_character'},
-         $q->label({for=>'register_character'},'Main Character'),
-         $q->input({type=>'text', name=>'character', id=>'register_character'})
-      ),
-      $q->span({id=>'register_system'},
-         $q->label('Primary System'),
-         $q->div(
-            $q->label({for=>'system_gram'},'GRAM'),
-            $q->input({type=>'radio', name=>'system', value=>'GRAM', id=>'system_gram'}),
-            $q->label({for=>'system_pf'},'Pathfinder'),
-            $q->input({type=>'radio', name=>'system', value=>'Pathfinder', id=>'system_pf', checked=>'checked'}),
-         )
-      ),
+      #commented out due to lack of support currently
+      #$q->p,
+      #$q->p,
+      #$q->h4('Game Options'),
+      #$q->hr,
+      #$q->span({id=>'register_character'},
+      #   $q->label({for=>'register_character'},'Main Character'),
+      #   $q->input({type=>'text', name=>'character', id=>'register_character'})
+      #),
+      #$q->span({id=>'register_system'},
+      #   $q->label('Primary System'),
+      #   $q->div(
+      #      $q->label({for=>'system_gram'},'GRAM'),
+      #      $q->input({type=>'radio', name=>'system', value=>'GRAM', id=>'system_gram'}),
+      #      $q->label({for=>'system_pf'},'Pathfinder'),
+      #      $q->input({type=>'radio', name=>'system', value=>'Pathfinder', id=>'system_pf', checked=>'checked'}),
+      #   )
+      #),
    );
 
    #login control
