@@ -24,15 +24,19 @@ sub new {
    if ( defined $_args->{name} ) {
       $check = $self->user('user',$_args->{name});
    } elsif (defined $_args->{session} ) {
-      $check = $self->user('sessioncheck',@{$_args}{'session'});
+      $check = $self->user('sessioncheck',$_args->{'session'});
+      #TODO session expire checks go here, as it needs to check against custom session expire times.
    }
-   
+   #check defaults to 1, so, if nothing else clears it, than its kosher 
    if ( $check ) {
-      if ( exists $check->{password} ) {
+      #if check is actually a hashref, instead of a scalar, map $check->{$_} to $self
+      if ( ref($check) ) {
          map  $self->{$_} = $check->{$_}, keys %$check;
       }
+      #regardless of hashref or not, if check is true, return self
       return $self;
    } else {
+      #if check isn't kosher, return false
       return;
    }
 
@@ -112,7 +116,10 @@ sub options {
    #Should accept (uid, option, [value])
    #If value, set option to value
    #otherwise display value
-   my ($self, $user, $option, $value) = @_;
+   my $self = shift;
+   my $user = $self->{name} ? $self->{name} : shift;
+   my ($option, $value) = @_;
+   
    my $queries = {
       get => "
          SELECT 
@@ -164,7 +171,12 @@ sub options {
 
 sub token {
    #method for manipulation and display of tokens 
-   my ($self, $user, $action, @_args) = @_;
+   #my ($self, $user, $action, @_args) = @_;
+   my $self = shift;
+   my $user = $self->{name} ? $self->{name} : shift;
+   my ($action, @_args) = @_; 
+   
+   
    my @flags = ('Register','GM','SGM','NPC');
    my $queries = {
       create => "

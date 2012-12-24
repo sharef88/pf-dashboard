@@ -7,7 +7,6 @@ use strict;
 use Class;
 use base qw/Class/;
 
-use Apache::DBI;
 use DBI;
 use Data::Dumper;
 use Data::Uniqid qw/uniqid/;
@@ -25,7 +24,7 @@ sub new {
          "DBi:mysql:$config::db",
          $config::user,
          $config::pw, 
-         {AutoCommit => 0}
+         {AutoCommit => 0, ShowErrorStatement=>1}
       )
    );
 

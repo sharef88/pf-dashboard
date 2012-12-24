@@ -122,17 +122,16 @@ unless ( $q->param('login') || $q->param('register') ) {
 	
    #scope the sql statement
    my $username = $q->param('username');
-   my $user_obj = user->new( {name=>"$username"} );
-   my $user = $user_obj->{user};
+   my $user = user->new( {name=>"$username"} );
    if ( exists $user->{'name'} ) {
       #fetch the infos
-		
-      if ( sha256_hex($q->param('password').$user->{'salt'}) eq $user->{'password'} ) {
+      if ( sha256_hex($q->param('password').$user->{salt}) eq $user->{password} ) {
          my $login_time = time;
          #behold, convoluted token generation.  Instead of generating a random number, this effectivly guarntees unique tokens
          my $token =  sha256_hex($user->{'name'}.$user->{'salt'}.$login_time);
          #put the token into the sql db, double verify the spot you're putting it with name and id
-         $db->user('sessionupdate',$token, $login_time, $user->{'name'}, $user->{'id'});
+         #$db->user('sessionupdate',$token, $login_time, $user->{name}, $user->{id});
+         $db->user('sessionupdate',$token, $login_time,@{$user}{'name','id'} );
 
          #push the appropriate data into the output for json conversion
          push @output, (202, $token, $login_time);

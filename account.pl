@@ -41,10 +41,10 @@ if ( $@ ) {
 }
 
 #Get the corresponding user to the session id
-my $user = $db->new($input[1]);
+my $user = user->new({session=>$input[1]});
 
 #if the user comes back as a 404, the session was invalid, force-logout to clear session
-if ( $user->{user}->{name} eq '404' ) {
+if ( $user->{name} eq '404' ) {
    print "<script type=text/javascript>
       \$(this).logout();
       </script>";
@@ -54,7 +54,7 @@ if ( $user->{user}->{name} eq '404' ) {
 #print a jquery statement to insert the user next to the logout button
 print <<"END";
 <script>
-   \$('#logout>span').html('User: $user->{user}->{name}');
+   \$('#logout>span').html('User: $user->{name}');
 </script>
 END
 
@@ -106,7 +106,7 @@ print $q->start_div( { id => 'account_tabs' } ),
       print "<div id='token_tables'>";
          print "<h3>Owned Tokens</h3>"; 
          print "<div id= 'owned_tokens' class='token_table ui-widget-header ui-corner-bottom'>";
-         foreach ( $db->token($user->{name},'owned') ) {
+         foreach ( $user->token('owned') ) {
             print qq%
             <span>
                <span class = 'token_flag ui-state-default ui-corner-all'>$_->{flag}</span>
@@ -120,7 +120,7 @@ print $q->start_div( { id => 'account_tabs' } ),
 
          print "<h3>Assigned Tokens</h3>";
          print "<div id= 'assigned_tokens' class='token_table ui-widget-header ui-corner-bottom'>";
-         foreach ( $db->token($user->{name},'assigned') ) {
+         foreach ( $user->token('assigned') ) {
             print qq%
             <span>
                <span class = 'token_flag ui-state-default ui-corner-all'>$_->{flag}</span>
