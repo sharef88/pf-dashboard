@@ -133,9 +133,11 @@ print $q->start_div( { id => 'account_tabs' } ),
       print "</form>";
    print $q->end_div; #end div#account_personal
    
-   print $q->div({id=>'account_game'},
-      "This is the 'Game Preferences tab'<p>You prefer $user->{games}"
-   ); #end div#account_game
+   print $q->start_div({id=>'account_game'});
+      my $game = @{@{$user->options('Prefered Game')}[0]}{option_value};
+      print "This is the 'Game Preferences tab'<p>You prefer $game";
+      
+   print $q->end_div; #end div#account_game
 
    
    print $q->start_div({id=>'account_token'});
