@@ -12,7 +12,7 @@ $.fn.login = function() {
    }
 
    //post the stuff to login.pl
-   $.post('login.pl', stuff,
+   $.post('ajax/login.pl', stuff,
       function(data) {
       
          //standard json session codes, time isn't actually used

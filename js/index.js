@@ -47,8 +47,8 @@ $.fn.account = function() {
       }
    });
 
-   $("a[data-url='login.pl']").attr('data-url','account.pl').attr('href','account.pl').html('Account');
-   $('#over_tabs').tabs('load',parseInt($("a[data-url='account.pl']").parents('li').index()));
+   $("a[data-url='ajax/login.pl']").attr('data-url','ajax/account.pl').attr('href','ajax/account.pl').html('Account');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='ajax/account.pl']").parents('li').index()));
    $('#logout').show()
    console.log('switched to account page');
 }
@@ -68,8 +68,8 @@ $.fn.logout = function() {
    $('#logout>span').html('');
 
    //switch the href of the tab to login.pl, and force-reload it
-   $("a[data-url='account.pl']").attr('data-url','login.pl').attr('href','login.pl').html('Login');
-   $('#over_tabs').tabs('load',parseInt($("a[data-url='login.pl']").parents('li').index()));
+   $("a[data-url='ajax/account.pl']").attr('data-url','ajax/login.pl').attr('href','ajax/login.pl').html('Login');
+   $('#over_tabs').tabs('load',parseInt($("a[data-url='ajax/login.pl']").parents('li').index()));
    
    //hide logout button
    $('#logout').hide();

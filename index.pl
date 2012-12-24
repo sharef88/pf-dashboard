@@ -76,17 +76,17 @@ print $q->header(
         $q->li(
             { class => '.over_menu' },
             $q->span( { class=> 'over_tab_refresh' },'' ),
-            $q->a( { href => 'login.pl', 'data-url'=>'login.pl'}, 'Account' ) 
+            $q->a( { href => 'ajax/login.pl', 'data-url'=>'ajax/login.pl'}, 'Account' ) 
         ),
         $q->li(
             { class => '.over_menu' },
             $q->span( { class=> 'over_tab_refresh' },''),
-            $q->a( { href => 'initative.pl', 'data-url'=>'initative.pl'}, 'Initative Tracker' )
+            $q->a( { href => 'ajax/initative.pl', 'data-url'=>'ajax/initative.pl'}, 'Initative Tracker' )
         ),
         $q->li(
             { class => '.over_menu' },
             $q->span( { class=> 'over_tab_refresh' },'' ),
-            $q->a( { href => 'class.pl', 'data-url'=>'class.pl' }, 'Class Search' )
+            $q->a( { href => 'ajax/class.pl', 'data-url'=>'ajax/class.pl' }, 'Class Search' )
         )
       ),
       $q->end_div();

@@ -23,7 +23,7 @@ $.fn.loadStuff = function(){
    //click on the button?
    $(this).click(function() {
       //yes? go get stuff ajax style
-      $.get("class.pl", 
+      $.get("ajax/class.pl", 
          //set the stuff to send, arch_id and level
          {arch: $('#archlist').val(), level: $('#select_level').val()},
          function(data) {
