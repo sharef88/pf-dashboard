@@ -5,6 +5,14 @@
    right:0;
    bottom:40px;
 }
+div#account_personal>form>span {
+   float:left;
+   clear:left;
+   width:250px;
+}
+div#account_personal>form>span>input, div#gender {
+   float:right;
+}
 div.token_table {
    position:relative;
    padding:5px;
@@ -26,10 +34,10 @@ div.token_table>span>* {
 div.token_table>span>span.token_code {
    width:110px;
 }
-div.token_table>span>span.token_target {
+div.token_table>span>span.token_target_name {
    width:150px;
 }
-div.token_table>span>span.token_source {
+div.token_table>span>span.token_source_name {
    width:150px;
 }
 div.token_table>span>span.token_notes {

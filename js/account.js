@@ -8,6 +8,15 @@ $('#account_tabs').ready(function() {
   });
 });
 
+$('#account_personal').ready(function() {
+   $('#gender').buttonset();
+   $('.account_control>input').button();
+   $(this).find('form').submit(function() {
+      console.log('omg submitted!');
+      return false;
+   });
+});
+
 //make the token_tables an accordion.... simple?
 $('#token_tables').ready(function() {
    $('#token_tables').accordion({
