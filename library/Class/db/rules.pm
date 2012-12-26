@@ -49,25 +49,15 @@ sub class {
          class_abilities_levels.modifier,
          class_abilities.mod_string, 
          class_abilities.description, 
-         class_abilities.id AS id
+         class_abilities.id
       FROM class_abilities_levels
       JOIN arch_list 
          ON arch_list.id = class_abilities_levels.class_id
       JOIN class_abilities 
          ON class_abilities.id = class_abilities_levels.ability_id
-      JOIN classes 
-         ON arch_list.base_id = classes.id
       WHERE arch_list.id = (?)
       AND class_abilities_levels.level <= (?)
-      ORDER BY arch_list.id ASC,
-      class_abilities_levels.level ASC",
-   
-   #requires arch_id returns custom columns required for the class table
-   columns =>
-      "SELECT 
-         ability_columns 
-      FROM arch_list 
-      WHERE arch_list.id = (?);",
+      ORDER BY class_abilities_levels.level ASC",
    
    #requires an archtype id, returns the non-ability scores
    stats =>
