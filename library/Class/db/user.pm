@@ -132,9 +132,8 @@ sub options {
       get => "
          SELECT 
             o.id,
-            u.name,
-            s.option_name,
-            o.option_value
+            s.option_name AS name,
+            o.option_value AS value
          FROM user_options 
             AS o
          JOIN users AS u 
