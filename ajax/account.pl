@@ -12,38 +12,31 @@ my $q = CGI->new;
 $q->default_dtd('html');
 
 
-sub logout {
-   print $q->header();
+
+#------------------------------------#
+#++++++++ Session Validation ++++++++#
+#------------------------------------#
+
+my @input;
+my $user;
+
+#eat any and all errors from checking the session variable
+#If there are errors, die gracefully with a logout
+eval { 
+   #if there isn't a session var set
+   #or the json in the session var is bad
+   #this dies
+   @input =  @{decode_json($q->Vars->{'session'})} or die; 
+   #If the instance comes back empty, die
+   $user = user->new({session=>$input[1]}) or die;
+};
+#if any of the eval fails, force logout
+if ( $@ ) {
+   print $q->header;
    print "<script type=text/javascript>
       \$(this).logout();
       </script>";
    exit;
-}
-
-#24hrs in second format
-my @input;
-
-#eat the error code from bad json codes
-eval { 
-   if ( exists $q->Vars->{'session'} ) {
-      @input =  @{decode_json($q->param('session'))} 
-   } else {
-      logout;
-   }
-};
-#regurgitate the error as a 500, then cause a logout, which will clear the session value, thus clearing the bad json;
-if ( $@ ) {
-   @input = @{[500]}; #pointless, but may be useful later
-   logout;
-}
-
-#Get the corresponding user to the session id
-#user->new will check the expiration of the session var
-my $user = user->new({session=>$input[1]});
-
-#if the user comes back as a 404, the session was invalid, force-logout to clear session
-if ( $user->{name} eq '404' ) {
-   logout;
 }
 
 #print a jquery statement to insert the user next to the logout button
@@ -96,7 +89,7 @@ print $q->start_div( { id => 'account_tabs' } ),
             
             #will error if you try to ->{option_value} on a null value
             my $check = @{$user->options($_->{name})}[0];
-            my $option = ref($check) ? $check->{option_value} : '';
+            my $option = ref($check) ? $check->{value} : '';
             
             #actually print the entry
             my $label = "<label>$_->{name}</label>";
@@ -134,7 +127,7 @@ print $q->start_div( { id => 'account_tabs' } ),
    print $q->end_div; #end div#account_personal
    
    print $q->start_div({id=>'account_game'});
-      my $game = @{@{$user->options('Prefered Game')}[0]}{option_value};
+      my $game = @{@{$user->options('Prefered Game')}[0]}{value};
       print "This is the 'Game Preferences tab'<p>You prefer $game";
       
    print $q->end_div; #end div#account_game
