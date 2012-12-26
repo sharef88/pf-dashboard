@@ -1,10 +1,11 @@
 #!/usr/local/bin/perl
-use CGI qw/standard -no_xhtml/;
-use lib qw[.. ../library];
-use Data::Dumper;
 use strict;
 use warnings;
-use util qw/dice/;
+
+use CGI qw/standard -no_xhtml/;
+use lib qw[.. ../library];
+
+use util;
 use Class::db::user;
 
 my $q = CGI->new;
