@@ -45,17 +45,15 @@ unless ( $q->param('arch') ) {
     print $q->start_Select( { id => 'archlist', name => 'arch', title => 'Archtype select' } );
 
     #null value
-    print $q->start_optgroup( { id => '0' } ),
-      $q->option( { value => '0' }, '-----' ), $q->end_optgroup;
+    print "<optgroup id='0'><option value='0'>-----</option></optgroup>";
     foreach my $class (@{$db->class('classlist')}) {
 
-        print $q->start_optgroup( { id => "class_" . $class->{'id'} } );
-        foreach (@{$db->class('archlist')}) {
-            if ( $class->{'name'} eq $_->{'base'} ) {
-                print $q->option( { value => $_->{'id'} }, $_->{'name'} );
-            }
-        }
-        print $q->end_optgroup();
+      print $q->start_optgroup( { id => "class_$class->{'id'}" } );
+         foreach (@{$db->class('archlist')}) {
+            print "<option value=$_->{'id'}>$_->{'name'}</option>" 
+              if ( $class->{'name'} eq $_->{'base'} );
+         }
+      print $q->end_optgroup();
     }
     print $q->end_Select();
 
@@ -87,41 +85,24 @@ unless ( $q->param('arch') ) {
 }
 else {
 
-    #parameter style stuff
-    my $archid  = param('arch');
-    my $level = param('level');
-    $level = 20 if ( $level > 20 || !$level || $level < 1 );
+   #parameter style stuff
+   my ($archid, $level) = @{$q->Vars}{qw(arch level)};
+   $level = 20 if ( $level > 20 || !$level || $level < 1 );
 
-    #store the stuff in an array
-    my @abilities = @{$db->class('abilities',$q->param('arch'), $level)};
-    my $stats = @{$db->class('stats',$q->param('arch'))}[0];
-
-#    my $class = $abilities[0]->{'class'};
-#    my $arch = $abilities[0]->{'arch'};
-      my ($class, $arch) = @{$stats}{'base','name'};
+   #store the stuff in an array
+   my @abilities = @{$db->class('abilities',$q->param('arch'), $level)};
+   my $stats = @{$db->class('stats',$q->param('arch'))}[0];
+   my ($class, $arch) = @{$stats}{'base','name'};
    
-
-    my $what = "$class ";
-
-    #if class isn't the same as archtype, suffix class with archtype name
-    if ( $class ne $arch ) {
-        $what .= " ($arch)";
-    }
+   #if class isn't the same as archtype, suffix class with archtype name
+   my $what = $class eq $arch ? $class : "$class ($arch)";
+    
     #column dictation
-# $stats->{ability_columns}; 
     my @col = split( ',',   $stats->{ability_columns});
-#   my @col = [];
-    my @column;
-    foreach my $id (@col) {
-        foreach my $ability (@abilities) {
-            if ( $ability->{'id'} == $id ) {
-                my @tmp = ($id,$ability->{'name'});
-                push( @column, [@tmp] );
-                last;
-            }
-        }
-    }
+    my %abilities_hash = map { $_->{id} => $_} @abilities;
+    my @column = map {[$_, $abilities_hash{$_}{name}]} @col;
 
+    
     #start the table, make the headers
 
     print $q->start_div({id=>'progression_div', class=>'ui-corner-all ui-widget-content'}),
@@ -137,7 +118,7 @@ else {
     print $q->end_Tr;
 
     #print the stuff by level
-    foreach our $a ( 1 .. $level ) {
+    foreach my $a ( 1 .. $level ) {
         print "<tr><td class='level'> $a </td>";
 
         #deal with the meta-info (bab, saves)
@@ -235,7 +216,11 @@ else {
         unless ( grep { $_ eq $id } @list ) {
             push( @list, $id );
             my ( $info, $name ) = @{$_}{qw(description name)};
-            $info =~ s/(\[\[class\]\])/$_->{'class'}/g;
+
+            #replace [[class]] with classname
+            $info =~ s/(\[\[class\]\])/\l$class\E/g;
+            #replace [[Class]] with Classname
+            $info =~ s/(\[\[Class\]\])/\u$class\E/g;
 
             #start the div
             print $q->div(
@@ -244,8 +229,7 @@ else {
                     style => 'display:none;',
                     class => 'ability_info'
                 },
-                h3('('.$id.') '.$name),
-                p($info)
+                "<h3>($id) $name</h3><p>$info</p>"
             );
         }
     }
