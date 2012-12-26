@@ -168,4 +168,17 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head2 options
+
+Type: many_to_many
+
+=cut
+
+
+__PACKAGE__->many_to_many(
+   'options',
+   'user_options',
+   'option'
+);
 1;

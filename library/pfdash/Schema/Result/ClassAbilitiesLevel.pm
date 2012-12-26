@@ -48,8 +48,9 @@ __PACKAGE__->table("class_abilities_levels");
 
 =head2 modifier
 
-  data_type: 'text'
+  data_type: 'varchar'
   is_nullable: 0
+  size: 100
 
 =cut
 
@@ -63,7 +64,7 @@ __PACKAGE__->add_columns(
   "ability_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "modifier",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "varchar", is_nullable => 0, size => 100 },
 );
 
 =head1 PRIMARY KEY
@@ -77,6 +78,26 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<class_id_1>
+
+=over 4
+
+=item * L</class_id>
+
+=item * L</level>
+
+=item * L</ability_id>
+
+=item * L</modifier>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("class_id_1", ["class_id", "level", "ability_id", "modifier"]);
 
 =head1 RELATIONS
 
@@ -111,8 +132,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HBkHnwle425eD3O6paw11A
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 16:59:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9fr7qHBKXyq6t8JZhDKuJw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

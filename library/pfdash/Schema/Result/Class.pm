@@ -156,7 +156,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
 # Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:96U0ek+b7KIv6PdhyFx7kg
 

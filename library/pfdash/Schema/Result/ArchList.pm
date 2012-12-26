@@ -174,4 +174,17 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head2 abilities
+
+Type: many_to_many
+
+=cut
+
+__PACKAGE__->many_to_many(
+  'abilities',
+  'class_abilities_levels',
+  'ability'
+);
+
 1;
