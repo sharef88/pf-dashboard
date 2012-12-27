@@ -194,24 +194,39 @@ __PACKAGE__->many_to_many(
      '+as'=>[qw/modifier level/]
   }
 );
+
+
+
+=head1 METHODS
+
+=head2 stats
+
+Args: Array of int.
+
+Prefered usage: stats(1..20).
+
+Return: Array of hashref with keys [bab, fort, ref, will].
+=cut
+
 sub stats {
    #can take 1-many number, preferred format $self->stats(1..20)
    my ($self, @_args) = @_;
    my @result;
+   my $base = $self->base;
 
    #loop through the levels given
    foreach my $level (@_args){
       my $out = {};
 
-      $out->{bab} = int $self->base->bab*($level/100);
+      $out->{bab} = int $base->bab*($level/100);
 
       my %callbacks = (
          good => sub { int ( $level / 2 ) + 2 }, 
          poor => sub { int $level / 3 }
       );
 
-      map { $out->{$_} = $callbacks{$self->base->$_}->() } 
-         ('fort', 'ref', 'will');
+      map { $out->{$_} = $callbacks{$base->$_}->() } 
+         (qw/fort ref will/);
 
       push @result, $out;
    }

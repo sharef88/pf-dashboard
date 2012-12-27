@@ -19,7 +19,7 @@ use base 'DBIx::Class::Core';
 
 =cut
 
-__PACKAGE__->table("skills");
+__PACKAGE__->table("skill_cataloge");
 
 =head1 ACCESSORS
 
