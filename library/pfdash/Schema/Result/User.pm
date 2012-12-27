@@ -169,16 +169,33 @@ __PACKAGE__->has_many(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
+
 =head2 options
 
 Type: many_to_many
 
 =cut
 
-
 __PACKAGE__->many_to_many(
-   'options',
-   'user_options',
-   'option'
+   option_list=>"user_options",
+   "cataloge",
+   {
+      '+select'=>['me.option_value','me.option_index','me.notes'],
+      '+as'     =>['option_value','option_index','notes']
+   }
 );
+
+__PACKAGE__->inflate_column('name',{
+      inflate => sub {
+         my ($a, $b) = @_;
+         #print ref $b;
+         print $b->id ;
+      },
+      deflate => sub {
+         my ($a, $b) = @_;
+      }
+   }
+);
+
 1;

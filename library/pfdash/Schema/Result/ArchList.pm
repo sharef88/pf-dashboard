@@ -20,6 +20,8 @@ use base 'DBIx::Class::Core';
 =cut
 
 __PACKAGE__->table("arch_list");
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
+
 
 =head1 ACCESSORS
 
@@ -136,6 +138,7 @@ __PACKAGE__->belongs_to(
   "pfdash::Schema::Result::Class",
   { id => "base_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
+  {cache=>1},
 );
 
 =head2 class_abilities_levels
@@ -175,6 +178,8 @@ __PACKAGE__->has_many(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
+
 =head2 abilities
 
 Type: many_to_many
@@ -182,9 +187,36 @@ Type: many_to_many
 =cut
 
 __PACKAGE__->many_to_many(
-  'abilities',
-  'class_abilities_levels',
-  'ability'
+  abilities=>'class_abilities_levels',
+  'ability',
+  {
+     '+select'=>[qw/me.modifier me.level/],
+     '+as'=>[qw/modifier level/]
+  }
 );
+sub stats {
+   #can take 1-many number, preferred format $self->stats(1..20)
+   my ($self, @_args) = @_;
+   my @result;
+
+   #loop through the levels given
+   foreach my $level (@_args){
+      my $out = {};
+
+      $out->{bab} = int $self->base->bab*($level/100);
+
+      my %callbacks = (
+         good => sub { int ( $level / 2 ) + 2 }, 
+         poor => sub { int $level / 3 }
+      );
+
+      map { $out->{$_} = $callbacks{$self->base->$_}->() } 
+         ('fort', 'ref', 'will');
+
+      push @result, $out;
+   }
+   return @result
+}
+   
 
 1;

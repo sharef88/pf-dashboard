@@ -10,6 +10,7 @@ use warnings;
 use base 'DBIx::Class::Schema';
 
 __PACKAGE__->load_namespaces;
+    
 
 
 # Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10

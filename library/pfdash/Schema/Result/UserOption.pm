@@ -21,6 +21,7 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table("user_options");
 
+
 =head1 ACCESSORS
 
 =head2 id
@@ -115,7 +116,7 @@ Related object: L<pfdash::Schema::Result::OptionCataloge>
 =cut
 
 __PACKAGE__->belongs_to(
-  "option",
+  "cataloge",
   "pfdash::Schema::Result::OptionCataloge",
   { id => "option_id" },
   { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
@@ -142,4 +143,7 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
+
 1;
