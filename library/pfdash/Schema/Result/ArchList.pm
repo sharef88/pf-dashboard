@@ -255,18 +255,18 @@ sub abilities {
       foreach my $raw (@abl_list) {
          if ($level == $raw->{level}) {
             my $abl;
-
-            $raw->{'mod_string'} =~ s/\?/$raw->{'modifier'}/g;
-            $raw->{'mod_string'} =~ s/any per day/at will/g;
+            #replace ? with the modifier number
+            $raw->{'mod_string'} =~ s/\?/$raw->{'modifier'}/go;
+            #if previous regex makes bad grammar, fix it
+            $raw->{'mod_string'} =~ s/any per day/at will/go;
             
             map { $abl->{$_} = $raw->{$_} } 
                (qw/id name type description mod_string modifier/);
 
             #replace [[class]] with classname
-            $abl->{description} =~ s/(\[\[class\]\])/\l$class\E/g;
+            $abl->{description} =~ s/(\[\[class\]\])/\l$class\E/go;
             #replace [[Class]] with Classname
-            $abl->{description} =~ s/(\[\[Class\]\])/\u$class\E/g;
-
+            $abl->{description} =~ s/(\[\[Class\]\])/\u$class\E/go;
             push @out, $abl;
          }
       }
