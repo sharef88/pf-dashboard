@@ -187,7 +187,7 @@ Type: many_to_many
 =cut
 
 __PACKAGE__->many_to_many(
-  abilities=>'class_abilities_levels',
+  ability_list=>'class_abilities_levels',
   'ability',
   {
      '+select'=>[qw/me.modifier me.level/],
@@ -232,6 +232,47 @@ sub stats {
    }
    return @result
 }
-   
+
+=head2 abilities
+
+Args: Array of int.
+
+Prefered usage: abilities(1..20).
+
+Return: Array of hashref with keys [].
+=cut
+
+sub abilities {
+   #can take 1-many number, preferred format $self->abilities(1..20)
+   my ($self, @_args) = @_;
+   my @result;
+   my @abl_list = $self->ability_list->hashref_rs->all;
+   my $class = $self->base->name;
+
+   #loop through the levels given
+   foreach my $level (@_args){
+      my @out;
+      foreach my $raw (@abl_list) {
+         if ($level == $raw->{level}) {
+            my $abl;
+
+            $raw->{'mod_string'} =~ s/\?/$raw->{'modifier'}/g;
+            $raw->{'mod_string'} =~ s/any per day/at will/g;
+            
+            map { $abl->{$_} = $raw->{$_} } 
+               (qw/id name type description mod_string modifier/);
+
+            #replace [[class]] with classname
+            $abl->{description} =~ s/(\[\[class\]\])/\l$class\E/g;
+            #replace [[Class]] with Classname
+            $abl->{description} =~ s/(\[\[Class\]\])/\u$class\E/g;
+
+            push @out, $abl;
+         }
+      }
+      push @result, \@out;
+   }
+   return @result
+}
 
 1;
