@@ -21,7 +21,6 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table("user_options");
 
-
 =head1 ACCESSORS
 
 =head2 id
@@ -107,7 +106,7 @@ __PACKAGE__->add_unique_constraint("user_id_2", ["user_id", "option_id", "option
 
 =head1 RELATIONS
 
-=head2 option
+=head2 cataloge
 
 Type: belongs_to
 
@@ -138,12 +137,10 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OraCDptWpOlIQ99OCgwksQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-28 15:11:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wggo8rW7lzWezZpCmqd1eQ
 
 __PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
 
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

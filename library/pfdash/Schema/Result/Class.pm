@@ -156,8 +156,11 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:96U0ek+b7KIv6PdhyFx7kg
+
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-28 15:11:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LglXkn8anR6zbLLYlIGVlQ
+
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

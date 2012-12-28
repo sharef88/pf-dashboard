@@ -41,6 +41,12 @@ __PACKAGE__->table("class_skills");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 sub_skill_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -50,6 +56,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "skill_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "sub_skill_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -85,20 +93,40 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<pfdash::Schema::Result::Skill>
+Related object: L<pfdash::Schema::Result::SkillCataloge>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "skill",
-  "pfdash::Schema::Result::Skill",
+  "pfdash::Schema::Result::SkillCataloge",
   { id => "skill_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "RESTRICT" },
 );
 
+=head2 sub_skill
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7pomaffmhmBE3lIzPJZX/g
+Type: belongs_to
+
+Related object: L<pfdash::Schema::Result::SubSkillCataloge>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "sub_skill",
+  "pfdash::Schema::Result::SubSkillCataloge",
+  { id => "sub_skill_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "RESTRICT",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-28 15:11:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DJDl9FcFCsawNzYL3JLIfg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

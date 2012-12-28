@@ -20,8 +20,6 @@ use base 'DBIx::Class::Core';
 =cut
 
 __PACKAGE__->table("class_abilities_levels");
-__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
-
 
 =head1 ACCESSORS
 
@@ -134,12 +132,11 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 16:59:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9fr7qHBKXyq6t8JZhDKuJw
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-28 15:11:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fonw43QxnIEC6y25vEDqwA
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
+
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
-
 1;

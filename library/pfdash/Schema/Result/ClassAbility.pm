@@ -21,7 +21,6 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table("class_abilities");
 
-
 =head1 ACCESSORS
 
 =head2 id
@@ -101,12 +100,11 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 14:13:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:X6U7wx+geatzxcpGfceAUQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-28 15:10:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pqrhTEi8VNAk+ip3Lbif5w
 
 __PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
 
+
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

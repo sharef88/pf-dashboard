@@ -20,8 +20,6 @@ use base 'DBIx::Class::Core';
 =cut
 
 __PACKAGE__->table("arch_list");
-__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
-
 
 =head1 ACCESSORS
 
