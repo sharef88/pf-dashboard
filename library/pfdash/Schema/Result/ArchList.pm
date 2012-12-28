@@ -239,7 +239,7 @@ Args: Array of int.
 
 Prefered usage: abilities(1..20).
 
-Return: Array of hashref with keys [].
+Return: LevelArray of arrays of hashref with keys [id, name, type, description, mod_string, modifier].
 =cut
 
 sub abilities {
