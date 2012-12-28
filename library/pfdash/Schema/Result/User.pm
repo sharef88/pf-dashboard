@@ -186,16 +186,4 @@ __PACKAGE__->many_to_many(
    }
 );
 
-__PACKAGE__->inflate_column('name',{
-      inflate => sub {
-         my ($a, $b) = @_;
-         #print ref $b;
-         print $b->id ;
-      },
-      deflate => sub {
-         my ($a, $b) = @_;
-      }
-   }
-);
-
 1;
