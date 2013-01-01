@@ -193,6 +193,18 @@ __PACKAGE__->many_to_many(
   }
 );
 
+__PACKAGE__->inflate_column('ability_columns',{
+   inflate => sub {
+      my ($raw, $self) = @_;
+      my @out = split ',',$raw;
+      return \@out;
+   },
+   deflate => sub {
+      my ($raw, $self) = @_;
+      return join ',',@$raw;
+   }
+});
+
 
 
 =head1 METHODS
