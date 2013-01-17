@@ -176,8 +176,6 @@ __PACKAGE__->has_many(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
-
 =head2 abilities
 
 Type: many_to_many
@@ -204,6 +202,8 @@ __PACKAGE__->inflate_column('ability_columns',{
       return join ',',@$raw;
    }
 });
+
+__PACKAGE__->resultset_class( 'DBIx::Class::ResultSet::HashRef' );
 
 
 
@@ -240,7 +240,7 @@ sub stats {
 
       push @result, $out;
    }
-   return @result
+   return \@result
 }
 
 =head2 abilities
@@ -282,7 +282,7 @@ sub abilities {
       }
       push @result, \@out;
    }
-   return @result
+   return \@result
 }
 
 1;
