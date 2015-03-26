@@ -1,0 +1,106 @@
+#init_tabs {
+   display:block;
+   position:absolute;
+   top:-1px;
+   left:0;
+   right:0;
+   bottom:40px;
+}
+
+#entries,#sorted_entry {
+    height:90% !important;
+}
+
+#entries .actor {
+   padding-left: 2.5em;
+   padding-right: 1.5em;
+   height:2.40em;
+   width:40em;
+   overflow-y:hidden;
+}
+#entries .actor .actor_name {
+   float: left;
+   margin-top:0.30%;
+}
+
+#entries .actor .sum_div {
+   float: left;
+   width:10em;
+   height:100%;
+   padding:0px 2px;
+   top:10%;
+   overflow:hidden;
+}
+#entries .actor .sum_field,.extra {
+   width:100%;
+   height:99%;
+   text-align:center;
+   overflow-y:hidden;
+}
+#entries .actor .extra>* {
+   text-align:center;
+   float: left;
+   width:29%;
+}
+#entries .actor .extra > input {
+   margin-top:2.5%;
+}
+#entries .actor .sum_field {
+   height:2.10em;
+   margin-bottom:3%;
+   margin-top:1.5%;
+}
+#entries .actor .sum_button {
+   margin-left:0.1em;
+   height:80%;
+   margin-top:1.5%
+}
+
+
+#entries .actor .actor_control {
+   float:right;
+   width:12.5%;
+   height:2.30em;
+   padding-left:1%;
+}
+#entries .actor .actor_control>* {
+   height:2em;
+   margin-top:-1em;
+   top:50%;
+}
+
+/*
+Formatting for the Results/Active Tab, output from ajax-sorted data
+*/
+
+#sorted_entry .active {
+   padding-top:0.1em !important;
+   padding-bottom:0.1em !important;
+   height:1.50em;
+   overflow-y:hidden;
+   font-size:1.5em;
+}
+
+#sorted_entry .active_info {
+   padding-right: 1.5em;
+   padding-left:0.3em;
+   width:30em;
+   overflow-y:hidden;
+}
+
+#sorted_entry .active > div {
+   text-align:center;
+   float:left;
+   height:96%
+}
+#sorted_entry .active div {
+   float:left;
+}
+#sorted_entry .active div:first-child {
+   margin-right:1px;
+}
+#sorted_entry .active .number {
+   width:2em;
+   text-align:center;
+   height:100%;
+}

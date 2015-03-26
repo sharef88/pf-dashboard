@@ -1,0 +1,44 @@
+#login_tab {
+   position:absolute;
+   left:0;
+   right:0;
+   top:0;
+}
+#login_tab>div {
+   text-align:center;
+   width:280px;
+   height:150px;
+   margin:auto;
+   position:relative;
+}
+#login_tab div>span, 
+   #login_tab div>hr, 
+   #login_tab div>p, 
+   form>span {
+      float:left;
+      clear:left;
+      width:280px;
+      text-align:left;
+}
+#login_tab div>h4 {
+   margin-bottom:0;
+}
+#login_tab div>p {
+   height:0.5em;
+}
+#login_tab form span>input {
+   float:right;
+}
+#login_tab form span
+   >input[type=text],
+   >input[type=password],
+   >input[type=email] {
+      width:150px;
+}
+#login_tab #login_control a {
+   float:left;
+   clear:left;
+}
+#login_tab #register_div #register_system>div {
+   float:right;
+}

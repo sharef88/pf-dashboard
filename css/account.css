@@ -1,0 +1,45 @@
+#account_tabs {
+   position:absolute;
+   top:-1px;
+   left:0;
+   right:0;
+   bottom:40px;
+}
+div#account_personal>form>span {
+   float:left;
+   clear:left;
+   width:250px;
+}
+div#account_personal>form>span>input, div#gender {
+   float:right;
+}
+div.token_table {
+   position:relative;
+   padding:5px;
+}
+div.token_table>span {
+   height:20px;
+   width:100%;
+   position:relative;
+   display:table-row;
+   overflow:hidden;
+}
+div.token_table>span>* {
+   height:15px;
+   display:table-cell;
+   float:left;
+   padding:2px;
+   margin:2px;
+}
+div.token_table>span>span.token_code {
+   width:110px;
+}
+div.token_table>span>span.token_target_name {
+   width:150px;
+}
+div.token_table>span>span.token_source_name {
+   width:150px;
+}
+div.token_table>span>span.token_notes {
+   width:140px;
+}

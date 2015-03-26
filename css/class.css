@@ -1,0 +1,52 @@
+.saves,.bab,.level,.abilities {
+   text-align:center;
+   color:white;
+}
+.ability {
+   color:white;
+   cursor:pointer;
+}
+#level_progression tr:nth-child(even) {
+   background-color:#0B3E6F;
+}
+#level_progression {
+   width:100%;
+}
+#progression_div th,td{
+   color:white;
+}
+#progression_div {
+   position:absolute;
+   margin-top:2em;
+   left:0;
+   right:0;
+   top:0;
+   bottom:40%;
+   overflow-y:auto;
+}
+#ability_info {
+   border-style:solid;
+   padding: 3% 10%;
+   overflow-y:auto;
+   position:absolute;
+   top:60%;
+   bottom:0;
+   right:0;
+   left:0;
+}
+#classdata {
+   position:absolute;
+   top:4em;
+   left:0;
+   right:0;
+   bottom:40px;
+}
+#class_select .spinner {
+   text-align: center;
+   color:white;
+   width:4em;
+}
+#class_select {
+   position:relative;
+   left:40%;
+}
