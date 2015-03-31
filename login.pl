@@ -2,11 +2,18 @@
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
 use Email::Valid;
+<<<<<<< HEAD
 #Environment dependant
 #use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
 use strict;
 use warnings;
 use library::util;
+=======
+use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
+use strict;
+use warnings;
+use util;
+>>>>>>> 9aa68b2f139c3d5b2525fd8ff8fc9ff4117b21a5
 
 use Class::db::user;
 
