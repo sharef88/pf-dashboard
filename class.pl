@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl -w
 use strict;
 use warnings;
 
-use lib qw/library/;
+use lib '/var/www/pf.dash/library';
 
 use CGI qw/:standard -no-xhtml/;
 use util;

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 use CGI qw/standard -no_xhtml/;
 use lib qw/library/;
 use Data::Dumper;

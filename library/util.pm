@@ -1,7 +1,7 @@
 #!/usr/local/bin/perl
 use strict;
 use warnings;
-use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 );
+use lib qw( library /home/sharef/perl5/lib/perl5/i686-linux /home/sharef/perl5/lib/perl5/i686-linux-thread-multi /home/sharef/perl5/lib/perl5 /var/www/pf.dash/library);
 
 use DBI;
 use Data::Dumper;
@@ -9,7 +9,7 @@ use List::Util qw/sum/;
 use Digest::SHA 'sha256_hex';
 use JSON::XS;
 
-use library::config;
+use config;
 
 sub dice {
    my ($dice, $number) = @_;

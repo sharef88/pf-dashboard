@@ -21,7 +21,7 @@ sub new {
    my $self = $class->SUPER::new(@_args);
    $self->cursor(
       DBI->connect(
-         "DBi:mysql:$config::db",
+         "DBi:mysql:database=$config::db;host=$config::hostname",
          $config::user,
          $config::pw, 
          {AutoCommit => 0, ShowErrorStatement=>1}
