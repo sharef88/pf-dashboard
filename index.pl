@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
-use lib qw? . ./library ?;
+use lib qw/ . library /;
 use strict;
 use warnings;
 use util;
