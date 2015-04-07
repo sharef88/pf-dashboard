@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use lib '/var/www/pf.dash/library';
+use lib qw: . :;
 
 use CGI qw/:standard -no-xhtml/;
 use util;

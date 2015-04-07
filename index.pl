@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 use CGI qw/standard -no_xhtml/;
 use Data::Dumper;
-use lib '/var/www/pf.dash/library';
+use lib qw/./;
 use strict;
 use warnings;
 use util;
