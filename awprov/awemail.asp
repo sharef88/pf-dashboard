@@ -1,4 +1,3 @@
-<html>
 <%
 Set Mail=CreateObject("CDO.Message")
 Mail.Subject="test email"
@@ -9,4 +8,3 @@ Mail.HTMLBody = "<h1>This is a test message.</h1>"
 Mail.Send
 set Mail=nothing
 %>
-</html>
