@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use lib qw: . :;
+use lib qw/ . library /;
 
 use CGI qw/:standard -no-xhtml/;
 use util;
